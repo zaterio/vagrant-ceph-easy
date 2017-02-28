@@ -20,8 +20,8 @@ Vagrant.configure("2") do |config|
 	 common.sudo = true
 	end	
    
-	config.vm.define "#{nodebase}-1" do |ceph1|
-		    ceph1.vm.hostname = "#{nodebase}-1"       
+	config.vm.define "#{settings['nodebase']}-1" do |ceph1|
+		    ceph1.vm.hostname = "#{settings['nodebase']}-1"       
 		    ceph1.vm.network :private_network, 
 		        :ip => "192.168.101.101",
 		        :libvirt__dhcp_enabled => "false",
@@ -51,8 +51,8 @@ Vagrant.configure("2") do |config|
 
 	end
 	
-	config.vm.define "#{nodebase}-2" do |ceph2|
-		    ceph2.vm.hostname = "#{nodebase}-2"   	    
+	config.vm.define "#{settings['nodebase']}-2" do |ceph2|
+		    ceph2.vm.hostname = "#{settings['nodebase']}-2"   	    
 		    ceph2.vm.network :private_network, 
 		        :ip => "192.168.101.102",
 		        :libvirt__dhcp_enabled => "false",
