@@ -3,7 +3,7 @@
   remote_user: vagrant
 
   vars_files:
-    - ../../vars/vars.yml
+   - ../../vars/vars.yml
     
     
   tasks:
@@ -58,3 +58,8 @@
       user: "{{ cephuser }}"
       state: present
       key: "{{ lookup('file', '../templates/ssh/id_rsa.pub') }}"
+      
+   - name: crea filesystem en vdb XFS
+     filesystem:
+      fstype: xfs
+      dev: /dev/vdb
