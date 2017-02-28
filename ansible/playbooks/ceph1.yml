@@ -55,7 +55,15 @@
       state: present
       regexp: '^cluster network'
       line: 'cluster network = {{cluster_network}}.0/255.255.255.0'
+ 
+   - name: Ejecuta ceph deploy install {% for host in groups.all[0:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     register: deploy
+     shell: ceph-deploy install {% for host in groups.all[0:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}
+     args:
+      chdir: /home/{{cephuser}}/cluster
 
-
-
-#ceph-deploy install admin-node node1 node2 node3
+     
+   - debug: msg="{{ deploy.stdout }}"
