@@ -7,7 +7,13 @@
     
     
   tasks:
-
+   - name: Allow vagrant to have passwordless sudo
+     lineinfile:
+      dest: /etc/sudoers
+      state: present
+      regexp: '^vagrant'
+      line: 'vagrant ALL=(ALL) NOPASSWD: ALL'
+      
    - name: Allow {{ cephuser }} to have passwordless sudo
      lineinfile:
       dest: /etc/sudoers

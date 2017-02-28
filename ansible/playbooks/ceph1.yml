@@ -1,7 +1,6 @@
 ---
-- hosts: ceph-1
-  remote_user: "{{ cephuser }}"
-
+- hosts: all
+  remote_user: vagrant
 
   vars_files:
    - ../../vars/vars.yml
@@ -10,18 +9,27 @@
   tasks:
 
    - name: Crea directorios
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}" 
      file:
       path: /home/{{cephuser}}/cluster
       state: directory      
 
    
-   - name: ceph deploy node 1
-     shell: ceph-deploy new {{nodebase}}-1
+   - name: ceph deploy node 1 
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     shell: ceph-deploy new {{nodebase}}-1 
      args:
       chdir: /home/{{cephuser}}/cluster
 
 
    - name: Cambia OSD poll size a 2
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
      lineinfile:
       dest: /home/{{cephuser}}/cluster/ceph.conf
       state: present
@@ -29,6 +37,9 @@
       line: 'osd pool default size = 2'
 
    - name: Agrega public network
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
      lineinfile:
       dest: /home/{{cephuser}}/cluster/ceph.conf
       state: present
@@ -36,10 +47,15 @@
       line: 'public network = {{public_network}}.0/255.255.255.0'
 
    - name: Agrega cluster network
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
      lineinfile:
       dest: /home/{{cephuser}}/cluster/ceph.conf
       state: present
       regexp: '^cluster network'
-      line: 'cluster network = {{cluster_network}}.0/255.255.255.0'    
-      
- cluster network
+      line: 'cluster network = {{cluster_network}}.0/255.255.255.0'
+
+
+
+#ceph-deploy install admin-node node1 node2 node3
