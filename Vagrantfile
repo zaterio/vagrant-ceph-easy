@@ -35,6 +35,7 @@ Vagrant.configure("2") do |config|
 			 v.keymap = "es"
 			 v.volume_cache = "none"
 			 v.storage :file, :size => '20G', :cache => 'none'
+			 v.storage :file, :size => '20G', :cache => 'none'
 		    end
 		    
 		    ceph1.vm.provision :hostmanager
@@ -65,6 +66,7 @@ Vagrant.configure("2") do |config|
 		     v.nested = true
 			 v.keymap = "es"
 			 v.volume_cache = "none"
+			 v.storage :file, :size => '20G', :cache => 'none'
 			 v.storage :file, :size => '20G', :cache => 'none'
 		    end
 		    
