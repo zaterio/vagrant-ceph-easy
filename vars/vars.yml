@@ -1,2 +1,3 @@
 cephuser: "cephadmin"
 password: $1$SomeSalt$VwjbgiHWuE0VhPB8KxO28.
+nodebase: "ceph"

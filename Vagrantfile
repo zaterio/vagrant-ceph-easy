@@ -20,8 +20,8 @@ Vagrant.configure("2") do |config|
 	 common.sudo = true
 	end	
    
-	config.vm.define "ceph-1" do |ceph1|
-		    ceph1.vm.hostname = "ceph-1"       
+	config.vm.define "#{nodebase}-1" do |ceph1|
+		    ceph1.vm.hostname = "#{nodebase}-1"       
 		    ceph1.vm.network :private_network, 
 		        :ip => "192.168.101.101",
 		        :libvirt__dhcp_enabled => "false",
@@ -43,11 +43,16 @@ Vagrant.configure("2") do |config|
 			 an.playbook = "ansible/playbooks/setenv.yml"
 			 an.sudo = true
 			end
+			
+			ceph1.vm.provision "ansible" do |an2|
+			 an2.playbook = "ansible/playbooks/ceph1.yml"
+			 an2.sudo = true
+			end
 
 	end
 	
-	config.vm.define "ceph-2" do |ceph2|
-		    ceph2.vm.hostname = "ceph-2"   	    
+	config.vm.define "#{nodebase}-2" do |ceph2|
+		    ceph2.vm.hostname = "#{nodebase}-2"   	    
 		    ceph2.vm.network :private_network, 
 		        :ip => "192.168.101.102",
 		        :libvirt__dhcp_enabled => "false",
