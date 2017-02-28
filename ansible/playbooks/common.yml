@@ -1,0 +1,8 @@
+---
+- hosts: all
+  remote_user: vagrant
+  gather_facts: true
+
+  tasks:
+
+   - command: hostname -f

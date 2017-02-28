@@ -1,72 +1,76 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+require 'yaml'
+settings = YAML.load_file('vars/vars.yml')
+
 Vagrant.configure("2") do |config|
 
-config.vm.box = "cheGGo/ubuntu-xenial64"
-config.vm.synced_folder ".", "/vagrant", type: "nfs", disabled: "true"
-config.hostmanager.enabled = true
-config.hostmanager.manage_host = true
-config.hostmanager.manage_guest = true
-config.hostmanager.include_offline = false
-config.hostmanager.ignore_private_ip = false
+	config.vm.box = "xenial2802201701"
+	config.vm.synced_folder ".", "/vagrant", type: "nfs", disabled: "true"
+	config.hostmanager.enabled = false
+	config.hostmanager.manage_host = false
+	config.hostmanager.manage_guest = true
+	config.hostmanager.include_offline = false
+	config.hostmanager.ignore_private_ip = false
+	
+	config.vm.provision "ansible" do |common|
+	 common.playbook = "ansible/playbooks/common.yml"
+	 common.limit = "all"
+	 common.sudo = true
+	end	
+   
+	config.vm.define "ceph-1" do |ceph1|
+		    ceph1.vm.hostname = "ceph-1"       
+		    ceph1.vm.network :private_network, 
+		        :ip => "192.168.101.101",
+		        :libvirt__dhcp_enabled => "false",
+		        :libvirt__forward_mode => "none",
+		        :libvirt__network_name => "ceph_cluster_network",
+		        :libvirt__netmask => "255.255.255.0"    
+		    ceph1.vm.provider :libvirt do |v|
+		     v.cpus = 1
+		     v.memory = 1024
+		     v.nested = true
+			 v.keymap = "es"
+			 v.volume_cache = "none"
+		    end
+		    
+		    ceph1.vm.provision :hostmanager
+		  		    
+			ceph1.vm.provision "ansible" do |an|
+			 an.playbook = "ansible/playbooks/setenv.yml"
+			 an.sudo = true
+			end
 
-	config.vm.define "node-1" do |node|
-
-	    node.vm.hostname = "node-1"   
-	    
-	    node.vm.network :public_network,
-	      :ip => "192.168.122.2",
-	      :dev => "virbr0",
-	      :mode => "bridge",
-	      :type => "bridge"
-	      
-	    node.vm.network :private_network, 
-	        :ip => "192.168.101.2",
-	        :libvirt__dhcp_enabled => "false",
-	        :libvirt__forward_mode => "none",
-	        :libvirt__network_name => "ceph_cluster_network",
-	        :libvirt__netmask => "255.255.255.0"    
-	         
-	    node.vm.provider :libvirt do |v|
-	     v.cpus = 1
-	     v.memory = 1024
-	     v.nested = true
-	    end     	    
-	    
-		node.vm.provision :hosts do |provisioner|
-	      provisioner.autoconfigure = true
-	      provisioner.sync_hosts = true
-	      provisioner.add_host '192.168.122.2', ['node-1']
-	    end
 	end
 	
-	config.vm.define "node-2" do |node|
-
-	    node.vm.hostname = "node-2"   
-	    
-	    node.vm.network :public_network,
-	      :ip => "192.168.122.3",
-	      :dev => "virbr0",
-	      :mode => "bridge",
-	      :type => "bridge"
-	      
-	    node.vm.network :private_network, 
-	        :ip => "192.168.101.3",
-	        :libvirt__dhcp_enabled => "false",
-	        :libvirt__forward_mode => "none",
-	        :libvirt__network_name => "ceph_cluster_network",
-	        :libvirt__netmask => "255.255.255.0"    
-	         
-	    node.vm.provider :libvirt do |v|
-	     v.cpus = 1
-	     v.memory = 1024
-	     v.nested = true
-	    end     	    
+	config.vm.define "ceph-2" do |ceph2|
+		    ceph2.vm.hostname = "ceph-2"   	    
+		    ceph2.vm.network :private_network, 
+		        :ip => "192.168.101.102",
+		        :libvirt__dhcp_enabled => "false",
+		        :libvirt__forward_mode => "none",
+		        :libvirt__network_name => "ceph_cluster_network",
+		        :libvirt__netmask => "255.255.255.0"    	         
+		    ceph2.vm.provider :libvirt do |v|
+		     v.cpus = 1
+		     v.memory = 1024
+		     v.nested = true
+			 v.keymap = "es"
+			 v.volume_cache = "none"
+		    end
+		    
+		    ceph2.vm.provision :hostmanager  
+		    
+		    ceph2.vm.provision "ansible" do |an|
+			 an.playbook = "ansible/playbooks/setenv.yml"
+			 an.sudo = true
+			end 
 	end	
-	
+ end
 
-	
-	
-end
+
+
+
 
