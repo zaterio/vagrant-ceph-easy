@@ -1,0 +1,45 @@
+---
+- hosts: ceph-1
+  remote_user: "{{ cephuser }}"
+
+
+  vars_files:
+   - ../../vars/vars.yml
+    
+    
+  tasks:
+
+   - name: Crea directorios
+     file:
+      path: /home/{{cephuser}}/cluster
+      state: directory      
+
+   
+   - name: ceph deploy node 1
+     shell: ceph-deploy new {{nodebase}}-1
+     args:
+      chdir: /home/{{cephuser}}/cluster
+
+
+   - name: Cambia OSD poll size a 2
+     lineinfile:
+      dest: /home/{{cephuser}}/cluster/ceph.conf
+      state: present
+      regexp: '^osd pool default size'
+      line: 'osd pool default size = 2'
+
+   - name: Agrega public network
+     lineinfile:
+      dest: /home/{{cephuser}}/cluster/ceph.conf
+      state: present
+      regexp: '^public network'
+      line: 'public network = {{public_network}}.0/255.255.255.0'
+
+   - name: Agrega cluster network
+     lineinfile:
+      dest: /home/{{cephuser}}/cluster/ceph.conf
+      state: present
+      regexp: '^cluster network'
+      line: 'cluster network = {{cluster_network}}.0/255.255.255.0'    
+      
+ cluster network

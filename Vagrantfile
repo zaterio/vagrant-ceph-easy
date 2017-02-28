@@ -23,7 +23,7 @@ Vagrant.configure("2") do |config|
 	config.vm.define "#{settings['nodebase']}-1" do |ceph1|
 		    ceph1.vm.hostname = "#{settings['nodebase']}-1"       
 		    ceph1.vm.network :private_network, 
-		        :ip => "192.168.101.101",
+		        :ip => "#{settings['cluster_network']}.101",
 		        :libvirt__dhcp_enabled => "false",
 		        :libvirt__forward_mode => "none",
 		        :libvirt__network_name => "ceph_cluster_network",
@@ -54,7 +54,7 @@ Vagrant.configure("2") do |config|
 	config.vm.define "#{settings['nodebase']}-2" do |ceph2|
 		    ceph2.vm.hostname = "#{settings['nodebase']}-2"   	    
 		    ceph2.vm.network :private_network, 
-		        :ip => "192.168.101.102",
+		        :ip => "#{settings['cluster_network']}.102",
 		        :libvirt__dhcp_enabled => "false",
 		        :libvirt__forward_mode => "none",
 		        :libvirt__network_name => "ceph_cluster_network",
