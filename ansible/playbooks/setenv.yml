@@ -71,20 +71,20 @@
       state: directory
       owner: "{{ cephuser }}"
       group: "{{ cephgroup }}"
-     with_items: "{{ osdmap[inventory_hostname] }}"
+     with_items: "{{ cluster[inventory_hostname]['osd'] }}"
 
 
    - name: Fomatea discos XFS
      filesystem: 
       fstype: xfs
-      dev: "{{ osdmap[inventory_hostname][item]['disk'] }}"
-     with_items: "{{ osdmap[inventory_hostname] }}"
+      dev: "{{ cluster[inventory_hostname]['osd'][item]['disk'] }}"
+     with_items: "{{ cluster[inventory_hostname]['osd'] }}"
 
 
    - name: Monta OSD
      mount: 
       name: /usr/local/{{ item }}
-      src: "{{ osdmap[inventory_hostname][item]['disk'] }}"
+      src: "{{ cluster[inventory_hostname]['osd'][item]['disk'] }}"
       fstype: xfs
       state: mounted
-     with_items: "{{ osdmap[inventory_hostname] }}"
+     with_items: "{{ cluster[inventory_hostname]['osd'] }}"

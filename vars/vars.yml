@@ -5,18 +5,24 @@ nodebase: "ceph"
 cluster_network: "192.168.101"
 public_network: "192.168.121"
 
-osdmap:
+cluster:
  ceph-1:
-   osd0:
+   ip_cluster: "192.168.101.101"
+   netmask_cluster: "255.255.255.0"
+   osd:
+    osd0:
      disk: /dev/vdb
-     mount: /usr/local/osd0 
-   osd1:
+     mount: /usr/local/osd0
+    osd1:
      disk: /dev/vdc
      mount: /usr/local/osd1 
- ceph-2:    
-   osd2:
+ ceph-2:
+   ip_cluster: "192.168.101.102"
+   netmask_cluster: "255.255.255.0"
+   osd:
+    osd2:
      disk: /dev/vdb
      mount: /usr/local/osd2
-   osd3:
+    osd3:
      disk: /dev/vdc
      mount: /usr/local/osd3

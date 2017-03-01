@@ -76,7 +76,10 @@ Vagrant.configure("2") do |config|
 			 an.playbook = "ansible/playbooks/setenv.yml"
 			 an.sudo = true
 			end 
-	end	
+	end
+	
+	
+	
  end
 
 
