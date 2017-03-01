@@ -1,9 +1,6 @@
 cephuser: "cephadmin"
 cephgroup: "cephadmin"
 password: $1$SomeSalt$VwjbgiHWuE0VhPB8KxO28.
-nodebase: "ceph"
-cluster_network: "192.168.101"
-public_network: "192.168.121"
 
 cluster:
  ceph-1:
@@ -26,3 +23,6 @@ cluster:
     osd3:
      disk: /dev/vdc
      mount: /usr/local/osd3
+    osd4:
+     disk: /dev/vdd
+     mount: /usr/local/osd4

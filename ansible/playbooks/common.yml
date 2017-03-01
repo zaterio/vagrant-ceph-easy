@@ -5,5 +5,10 @@
   
   vars_files:
    - ../../vars/vars.yml
-  tasks: 
+  tasks:
+  
+  
+  - debug:
+    msg: "Running common playbook"
+
    - command: hostname -f

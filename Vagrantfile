@@ -3,6 +3,7 @@
 
 require 'yaml'
 settings = YAML.load_file('vars/vars.yml')
+servers = settings["cluster"]
 
 Vagrant.configure("2") do |config|
 
@@ -20,69 +21,51 @@ Vagrant.configure("2") do |config|
 	 common.sudo = true
 	end	
    
-	config.vm.define "#{settings['nodebase']}-1" do |ceph1|
-		    ceph1.vm.hostname = "#{settings['nodebase']}-1"       
-		    ceph1.vm.network :private_network, 
-		        :ip => "#{settings['cluster_network']}.101",
+
+	 loop = 0
+	 
+     servers.each do |hostname, array|
+	   config.vm.define hostname do |node|   		    
+		   node.vm.hostname = hostname      
+		    
+		    node.vm.network :private_network, 
+		        :ip => array['ip_cluster'],
 		        :libvirt__dhcp_enabled => "false",
 		        :libvirt__forward_mode => "none",
 		        :libvirt__network_name => "ceph_cluster_network",
-		        :libvirt__netmask => "255.255.255.0"    
-		    ceph1.vm.provider :libvirt do |v|
+		        :libvirt__netmask => array['netmask_cluster']  
+		    node.vm.provider :libvirt do |v|
 		     v.cpus = 1
 		     v.memory = 1024
 		     v.nested = true
 			 v.keymap = "es"
 			 v.volume_cache = "none"
-			 v.storage :file, :size => '20G', :cache => 'none'
-			 v.storage :file, :size => '20G', :cache => 'none'
+			 array['osd'].each do |o|
+			  v.storage :file, :size => '20G', :cache => 'none'
+			 end
 		    end
 		    
-		    ceph1.vm.provision :hostmanager
+		    node.vm.provision :hostmanager
 		  		    
-			ceph1.vm.provision "ansible" do |an|
+			node.vm.provision "ansible" do |an|
 			 an.playbook = "ansible/playbooks/setenv.yml"
 			 an.sudo = true
 			end
+		   
+		   # Firts node is ceph admin	
+		   if loop == 0
+		    admin_node = hostname
+			node.vm.provision "ansible" do |an2|
+			 an2.playbook = "ansible/playbooks/ceph1.yml"
+			 an2.sudo = true
+			end
 			
-			#ceph1.vm.provision "ansible" do |an2|
-			 #an2.playbook = "ansible/playbooks/ceph1.yml"
-			 #an2.sudo = true
-			#end
-
+		   end
+			
+			loop += 1
+		end
 	end
-	
-	config.vm.define "#{settings['nodebase']}-2" do |ceph2|
-		    ceph2.vm.hostname = "#{settings['nodebase']}-2"   	    
-		    ceph2.vm.network :private_network, 
-		        :ip => "#{settings['cluster_network']}.102",
-		        :libvirt__dhcp_enabled => "false",
-		        :libvirt__forward_mode => "none",
-		        :libvirt__network_name => "ceph_cluster_network",
-		        :libvirt__netmask => "255.255.255.0"    	         
-		    ceph2.vm.provider :libvirt do |v|
-		     v.cpus = 1
-		     v.memory = 1024
-		     v.nested = true
-			 v.keymap = "es"
-			 v.volume_cache = "none"
-			 v.storage :file, :size => '20G', :cache => 'none'
-			 v.storage :file, :size => '20G', :cache => 'none'
-		    end
-		    
-		    ceph2.vm.provision :hostmanager  
-		    
-		    ceph2.vm.provision "ansible" do |an|
-			 an.playbook = "ansible/playbooks/setenv.yml"
-			 an.sudo = true
-			end 
-	end
-	
-	
-	
- end
-
-
+end
 
 
 
