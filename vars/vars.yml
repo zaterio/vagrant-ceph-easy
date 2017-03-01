@@ -2,10 +2,13 @@ cephuser: "cephadmin"
 cephgroup: "cephadmin"
 password: $1$SomeSalt$VwjbgiHWuE0VhPB8KxO28.
 
+cluster_network: "192.168.100.0"
+cluster_netmask: "255.255.255.0"
+cluster_network_name: "ceph_cluster_network"
+
 cluster:
  ceph-1:
    ip_cluster: "192.168.101.101"
-   netmask_cluster: "255.255.255.0"
    osd:
     osd0:
      disk: /dev/vdb
@@ -15,7 +18,6 @@ cluster:
      mount: /usr/local/osd1 
  ceph-2:
    ip_cluster: "192.168.101.102"
-   netmask_cluster: "255.255.255.0"
    osd:
     osd2:
      disk: /dev/vdb

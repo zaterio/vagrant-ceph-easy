@@ -19,34 +19,34 @@
       state: directory      
 
    
-   #- name: ceph deploy node 1 
-     #become: yes
-     #become_method: "sudo"
-     #become_user: "{{ cephuser }}"
-     #shell: ceph-deploy new {{nodebase}}-1 
-     #args:
-      #chdir: /home/{{cephuser}}/cluster
+   - name: ceph deploy node 1 
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     shell: ceph-deploy new {{ inventory_hostname }} 
+     args:
+      chdir: /home/{{cephuser}}/cluster
 
 
-   #- name: Cambia OSD poll size a 2
-     #become: yes
-     #become_method: "sudo"
-     #become_user: "{{ cephuser }}"
-     #lineinfile:
-      #dest: /home/{{cephuser}}/cluster/ceph.conf
-      #state: present
-      #regexp: '^osd pool default size'
-      #line: 'osd pool default size = 2'
+   - name: Cambia OSD poll size a 2
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     lineinfile:
+      dest: /home/{{cephuser}}/cluster/ceph.conf
+      state: present
+      regexp: '^osd pool default size'
+      line: 'osd pool default size = 2'
 
-   #- name: Agrega public network
-     #become: yes
-     #become_method: "sudo"
-     #become_user: "{{ cephuser }}"
-     #lineinfile:
-      #dest: /home/{{cephuser}}/cluster/ceph.conf
-      #state: present
-      #regexp: '^public network'
-      #line: 'public network = {{public_network}}.0/255.255.255.0'
+   - name: Agrega public network
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     lineinfile:
+      dest: /home/{{cephuser}}/cluster/ceph.conf
+      state: present
+      regexp: '^public network'
+      line: 'public network = {{ cluster_network }}/{{ cluster_netmask }}'
 
    #- name: Agrega cluster network
      #become: yes
