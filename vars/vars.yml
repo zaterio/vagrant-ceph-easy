@@ -34,3 +34,76 @@ cluster:
     osd4:
      disk: /dev/vdd
      mount: /usr/local/osd4
+ ceph-3:
+   ip_cluster: "192.168.101.103"
+   osd:
+    osd5:
+     disk: /dev/vdb
+     mount: /usr/local/osd5
+    osd6:
+     disk: /dev/vdc
+     mount: /usr/local/osd6
+    osd7:
+     disk: /dev/vdd
+     mount: /usr/local/osd7
+
+
+# CephAdminNode
+# ceph-1
+# 
+# 
+# CephAdminNodeConfig	
+# {  
+#    "ip_cluster"   =>"192.168.101.101",
+#    "osd"   =>   {  
+#       "osd0"      =>      {  
+#          "disk"         =>"/dev/vdb",
+#          "mount"         =>"/usr/local/osd0"
+#       },
+#       "osd1"      =>      {  
+#          "disk"         =>"/dev/vdc",
+#          "mount"         =>"/usr/local/osd1"
+#       }
+#    }
+# }
+# 
+# CephServersNoAdmin
+# {
+# 	"ceph-2" => {
+# 		"ip_cluster" => "192.168.101.102", "osd" => {
+# 			"osd2" => {
+# 				"disk" => "/dev/vdb", "mount" => "/usr/local/osd2"
+# 			}, "osd3" => {
+# 				"disk" => "/dev/vdc", "mount" => "/usr/local/osd3"
+# 			}, "osd4" => {
+# 				"disk" => "/dev/vdd", "mount" => "/usr/local/osd4"
+# 			}
+# 		}
+# 	}
+# }
+# 
+# 
+# servers
+# 
+# {
+# 	"ceph-1" => {
+# 		"ip_cluster" => "192.168.101.101", "osd" => {
+# 			"osd0" => {
+# 				"disk" => "/dev/vdb", "mount" => "/usr/local/osd0"
+# 			}, "osd1" => {
+# 				"disk" => "/dev/vdc", "mount" => "/usr/local/osd1"
+# 			}
+# 		}
+# 	}, "ceph-2" => {
+# 		"ip_cluster" => "192.168.101.102", "osd" => {
+# 			"osd2" => {
+# 				"disk" => "/dev/vdb", "mount" => "/usr/local/osd2"
+# 			}, "osd3" => {
+# 				"disk" => "/dev/vdc", "mount" => "/usr/local/osd3"
+# 			}, "osd4" => {
+# 				"disk" => "/dev/vdd", "mount" => "/usr/local/osd4"
+# 			}
+# 		}
+# 	}
+# }
+# 
