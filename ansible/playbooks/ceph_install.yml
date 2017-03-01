@@ -9,7 +9,24 @@
   tasks:
   
    - debug: msg="Running ceph playbook on {{ inventory_hostname }}"
-    
+
+
+   - name: add ceph release key
+     apt_key:
+      url: "https://download.ceph.com/keys/release.asc"
+      state: present
+      
+   - name: add ceph repo 
+     apt_repository:
+      repo: deb https://download.ceph.com/debian-{{ceph_stable_release}} xenial main 
+      state: present
+      filename: 'ceph'
+      
+   - name: Update repositories cache and install "ceph-deploy" package
+     apt:
+      name: ceph-deploy
+      update_cache: yes 
+          
    - name: Crea directorios
      become: yes
      become_method: "sudo"

@@ -9,13 +9,13 @@
   tasks:
 
    - debug: msg="Running setenv playbook"  
-     
+      
    - name: updates a server
      apt: update_cache=yes
    
    - name: upgrade a server
      apt: upgrade=dist
-            
+     
      
    - name: Allow vagrant to have passwordless sudo
      lineinfile:
