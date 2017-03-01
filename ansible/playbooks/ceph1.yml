@@ -7,8 +7,8 @@
     
     
   tasks:
-  - debug:
-    msg: "Running ceph playbook"
+  
+   - debug: msg="Running ceph playbook on {{ inventory_hostname }}"
     
    - name: Crea directorios
      become: yes
@@ -19,44 +19,44 @@
       state: directory      
 
    
-   - name: ceph deploy node 1 
-     become: yes
-     become_method: "sudo"
-     become_user: "{{ cephuser }}"
-     shell: ceph-deploy new {{nodebase}}-1 
-     args:
-      chdir: /home/{{cephuser}}/cluster
+   #- name: ceph deploy node 1 
+     #become: yes
+     #become_method: "sudo"
+     #become_user: "{{ cephuser }}"
+     #shell: ceph-deploy new {{nodebase}}-1 
+     #args:
+      #chdir: /home/{{cephuser}}/cluster
 
 
-   - name: Cambia OSD poll size a 2
-     become: yes
-     become_method: "sudo"
-     become_user: "{{ cephuser }}"
-     lineinfile:
-      dest: /home/{{cephuser}}/cluster/ceph.conf
-      state: present
-      regexp: '^osd pool default size'
-      line: 'osd pool default size = 2'
+   #- name: Cambia OSD poll size a 2
+     #become: yes
+     #become_method: "sudo"
+     #become_user: "{{ cephuser }}"
+     #lineinfile:
+      #dest: /home/{{cephuser}}/cluster/ceph.conf
+      #state: present
+      #regexp: '^osd pool default size'
+      #line: 'osd pool default size = 2'
 
-   - name: Agrega public network
-     become: yes
-     become_method: "sudo"
-     become_user: "{{ cephuser }}"
-     lineinfile:
-      dest: /home/{{cephuser}}/cluster/ceph.conf
-      state: present
-      regexp: '^public network'
-      line: 'public network = {{public_network}}.0/255.255.255.0'
+   #- name: Agrega public network
+     #become: yes
+     #become_method: "sudo"
+     #become_user: "{{ cephuser }}"
+     #lineinfile:
+      #dest: /home/{{cephuser}}/cluster/ceph.conf
+      #state: present
+      #regexp: '^public network'
+      #line: 'public network = {{public_network}}.0/255.255.255.0'
 
-   - name: Agrega cluster network
-     become: yes
-     become_method: "sudo"
-     become_user: "{{ cephuser }}"
-     lineinfile:
-      dest: /home/{{cephuser}}/cluster/ceph.conf
-      state: present
-      regexp: '^cluster network'
-      line: 'cluster network = {{cluster_network}}.0/255.255.255.0'
+   #- name: Agrega cluster network
+     #become: yes
+     #become_method: "sudo"
+     #become_user: "{{ cephuser }}"
+     #lineinfile:
+      #dest: /home/{{cephuser}}/cluster/ceph.conf
+      #state: present
+      #regexp: '^cluster network'
+      #line: 'cluster network = {{cluster_network}}.0/255.255.255.0'
  
    #- name: Ejecuta ceph deploy install {% for host in groups.all[0:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}
      #become: yes
