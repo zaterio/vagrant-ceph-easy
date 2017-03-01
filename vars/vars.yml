@@ -3,3 +3,19 @@ password: $1$SomeSalt$VwjbgiHWuE0VhPB8KxO28.
 nodebase: "ceph"
 cluster_network: "192.168.101"
 public_network: "192.168.121"
+
+osdmap:
+ ceph-1:
+   osd0:
+     disk: /dev/vdb
+     mount: /usr/local/osd0 
+   osd1:
+     disk: /dev/vdc
+     mount: /usr/local/osd1 
+ ceph-2:    
+   osd2:
+     disk: /dev/vdb
+     mount: /usr/local/osd2
+   osd3:
+     disk: /dev/vdc
+     mount: /usr/local/osd3

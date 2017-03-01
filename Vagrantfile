@@ -45,10 +45,10 @@ Vagrant.configure("2") do |config|
 			 an.sudo = true
 			end
 			
-			ceph1.vm.provision "ansible" do |an2|
-			 an2.playbook = "ansible/playbooks/ceph1.yml"
-			 an2.sudo = true
-			end
+			#ceph1.vm.provision "ansible" do |an2|
+			 #an2.playbook = "ansible/playbooks/ceph1.yml"
+			 #an2.sudo = true
+			#end
 
 	end
 	

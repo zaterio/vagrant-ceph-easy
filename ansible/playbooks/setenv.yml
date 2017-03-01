@@ -63,9 +63,28 @@
      authorized_key:
       user: "{{ cephuser }}"
       state: present
-      key: "{{ lookup('file', '../templates/ssh/id_rsa.pub') }}"
-      
-   - name: crea filesystem en vdb XFS
-     filesystem:
+      key: "{{ lookup('file', '../templates/ssh/id_rsa.pub') }}" 
+
+   - name: Crea directorios OSD
+     file: 
+      path: /usr/local/{{ item }}
+      state: directory
+      owner: "{{ cephuser }}"
+      group: "{{ cephuser }}"
+     with_items: "{{ osdmap[inventory_hostname] }}"
+
+
+   - name: Fomatea discos XFS
+     filesystem: 
       fstype: xfs
-      dev: /dev/vdb
+      dev: "{{ osdmap[inventory_hostname][item]['disk'] }}"
+     with_items: "{{ osdmap[inventory_hostname] }}"
+
+
+   - name: Monta OSD
+     mount: 
+      name: /usr/local/{{ item }}
+      src: "{{ osdmap[inventory_hostname][item]['disk'] }}"
+      fstype: xfs
+      state: mounted
+     with_items: "{{ osdmap[inventory_hostname] }}"

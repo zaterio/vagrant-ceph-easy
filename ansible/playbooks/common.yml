@@ -2,7 +2,13 @@
 - hosts: all
   remote_user: vagrant
   gather_facts: true
-
-  tasks:
-
+  
+  vars_files:
+   - ../../vars/vars.yml
+  tasks: 
    - command: hostname -f
+  
+
+
+
+  
