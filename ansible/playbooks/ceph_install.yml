@@ -58,14 +58,17 @@
       regexp: '^cluster network'
       line: 'cluster network = {{cluster_network}}/{{ cluster_netmask }}'
  
-   #- name: Ejecuta ceph deploy install {% for host in groups.all[0:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}
-     #become: yes
-     #become_method: "sudo"
-     #become_user: "{{ cephuser }}"
-     #register: deploy
-     #shell: ceph-deploy install {% for host in groups.all[0:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}
-     #args:
-      #chdir: /home/{{cephuser}}/cluster
-
+ 
+   - debug: msg="preparing ceph-deploy install {{ ceph_admin_node }} {% for host in groups.all[1:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}"
+ 
+ 
+   - name: Ejecuta ceph deploy install {% for host in groups.all[0:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}}
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     register: deploy
+     shell: ceph-deploy install {{ ceph_admin_node }} {% for host in groups.all[1:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}
+     args:
+      chdir: /home/{{cephuser}}/cluster
      
-   #- debug: msg="{{ deploy.stdout }}"
+   - debug: msg="{{ deploy.stdout }}"

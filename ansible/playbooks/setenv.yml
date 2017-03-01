@@ -14,7 +14,8 @@
      apt: update_cache=yes
    
    - name: upgrade a server
-     apt: upgrade=dist     
+     apt: upgrade=dist
+            
      
    - name: Allow vagrant to have passwordless sudo
      lineinfile:
