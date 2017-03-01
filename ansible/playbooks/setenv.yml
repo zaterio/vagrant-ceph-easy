@@ -21,17 +21,17 @@
       regexp: '^{{ cephuser }}'
       line: '{{ cephuser }} ALL=(ALL) NOPASSWD: ALL'
       
-   - name: crea grupo {{ cephuser }}
-     group: name={{ cephuser }} state=present
+   - name: crea grupo {{ cephgroup }}
+     group: name={{ cephgroup }} state=present
   
    - name: crea usuario {{ cephuser }}
-     user: name={{ cephuser }} group={{ cephuser }} groups=adm shell=/bin/bash state=present password={{password}}
+     user: name={{ cephuser }} group={{ cephgroup }} groups=adm shell=/bin/bash state=present password={{password}}
 
    - name: crea dir .ssh
      file:
       path: /home/{{ cephuser }}/.ssh
       owner: "{{ cephuser }}"
-      group: "{{ cephuser }}"
+      group: "{{ cephgroup }}"
       mode: 0700      
       state: directory
 
@@ -40,7 +40,7 @@
       src: ../templates/ssh/id_rsa.pub
       dest: /home/{{ cephuser }}/.ssh/id_rsa.pub
       owner: "{{ cephuser }}"
-      group: "{{ cephuser }}"
+      group: "{{ cephgroup }}"
       mode: 0600
 
    - name: copia id_rsa {{ cephuser }}
@@ -48,7 +48,7 @@
       src: ../templates/ssh/id_rsa
       dest: /home/{{ cephuser }}/.ssh/id_rsa
       owner: "{{ cephuser }}"
-      group: "{{ cephuser }}"
+      group: "{{ cephgroup }}"
       mode: 0600
 
    - name: copia config ssh
@@ -56,7 +56,7 @@
       src: ../templates/ssh/config
       dest: /home/{{ cephuser }}/.ssh/config
       owner: "{{ cephuser }}"
-      group: "{{ cephuser }}"
+      group: "{{ cephgroup }}"
       mode: 0600
 
    - name: Set authorized key took from file
@@ -70,7 +70,7 @@
       path: /usr/local/{{ item }}
       state: directory
       owner: "{{ cephuser }}"
-      group: "{{ cephuser }}"
+      group: "{{ cephgroup }}"
      with_items: "{{ osdmap[inventory_hostname] }}"
 
 
