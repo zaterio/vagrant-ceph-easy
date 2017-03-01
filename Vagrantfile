@@ -32,8 +32,8 @@ Vagrant.configure("2") do |config|
 		        :ip => array['ip_cluster'],
 		        :libvirt__dhcp_enabled => "false",
 		        :libvirt__forward_mode => "none",
-		        :libvirt__network_name => #{settings["cluster_network_name"]},
-		        :libvirt__netmask => #{settings["cluster_netmask"]}  
+		        :libvirt__network_name => settings["cluster_network_name"],
+		        :libvirt__netmask => settings["cluster_netmask"]
 		    node.vm.provider :libvirt do |v|
 		     v.cpus = 1
 		     v.memory = 1024
@@ -56,7 +56,7 @@ Vagrant.configure("2") do |config|
 		   if loop == 0
 		    ceph_admin_node = hostname
 			node.vm.provision "ansible" do |an2|
-			 an2.playbook = "ansible/playbooks/ceph1.yml"
+			 an2.playbook = "ansible/playbooks/ceph_install.yml"
 			 an2.extra_vars = { "ceph_admin_node" => ceph_admin_node }
 			 an2.sudo = true
 			end
