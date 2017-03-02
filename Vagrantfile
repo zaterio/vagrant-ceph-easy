@@ -5,11 +5,11 @@ require 'yaml'
 settings = YAML.load_file('vars/vars.yml')
 cluster = settings["cluster"]
 
-CephAdminNode = []
+CephAdminNodes = []
 
 cluster.each do |array|
  if array.include? 'admin'
-  CephAdminNode << array['node']
+  CephAdminNodes << array['node']
  end 
  array['network'].each do |net|
   if net.include? 'ipcluster'
@@ -19,7 +19,7 @@ end
 
 Vagrant.configure("2") do |config|
 
-	config.vm.box = "elastic/ubuntu-16.04-x86_64"
+	config.vm.box = "xenial0103201702"
 	config.vm.synced_folder ".", "/vagrant", type: "nfs", disabled: "true"
 	config.hostmanager.enabled = false
 	config.hostmanager.manage_host = false
@@ -62,5 +62,19 @@ Vagrant.configure("2") do |config|
 			end	   
 	
 		end
+	end
+
+
+	cluster.each do |array|
+	 if array.include? 'admin'
+	    CephAdminNode = array['node']
+		config.vm.define CephAdminNode do |admnode|   		       		
+				    admnode.vm.provision "ansible" do |an2|
+					 an2.playbook = "ansible/playbooks/ceph_install.yml"
+					 an2.extra_vars = { "CephAdminNode" => CephAdminNode }
+					 an2.sudo = true
+					end
+		end
+	 end 
 	end
 end		
