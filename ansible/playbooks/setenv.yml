@@ -15,7 +15,12 @@
    
    - name: upgrade a server
      apt: upgrade=dist
-     
+
+   - name: instala paquetes
+     apt: name="{{ item }}" state=present
+     with_items:
+      - ntp
+       
      
    - name: Allow vagrant to have passwordless sudo
      lineinfile:

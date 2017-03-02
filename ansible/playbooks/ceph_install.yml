@@ -1,6 +1,6 @@
 ---
 - hosts: all
-  remote_user: vagrant
+  remote_user: root
 
   vars_files:
    - ../../vars/vars.yml
@@ -25,8 +25,6 @@
       update_cache: yes 
           
    - name: Crea directorios
-     become: yes
-     become_method: "sudo"
      become_user: "{{ cephuser }}" 
      file:
       path: /home/{{cephuser}}/cluster
