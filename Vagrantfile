@@ -56,12 +56,12 @@ Vagrant.configure("2") do |config|
 			 end
 		    end
 		    
-		    node.vm.provision :hostmanager
+		    #node.vm.provision :hostmanager
 		  		    
-			node.vm.provision "ansible" do |an|
-			 an.playbook = "ansible/playbooks/setenv.yml"
-			 an.sudo = true
-			end	   
+			#node.vm.provision "ansible" do |an|
+			 #an.playbook = "ansible/playbooks/setenv.yml"
+			 #an.sudo = true
+			#end	   
 	
 		end
 	end
@@ -74,6 +74,16 @@ Vagrant.configure("2") do |config|
 				    admnode.vm.provision "ansible" do |an2|
 					 an2.playbook = "ansible/playbooks/ceph_install.yml"
 					 an2.extra_vars = { "CephadmnodeNode" => CephadmnodeNode }
+
+					 cluster.each do |array2|
+						if array2.include? 'monnode'
+					     CephMonNode = array2['node']
+					    else
+					     CephMonNode = array['node']
+					    end
+					 end
+
+					 an2.extra_vars = { "CephMonNode" => CephMonNode }
 					 an2.sudo = true
 					end
 		end

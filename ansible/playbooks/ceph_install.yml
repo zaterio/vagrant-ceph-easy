@@ -31,11 +31,12 @@
       state: directory      
 
    
-   - name: ceph deploy node 1 
+   - name: ceph-deploy new {{CephMonNode}}
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
-     shell: ceph-deploy new {{ inventory_hostname }} 
+     register: deploy
+     shell: ceph-deploy new {{ CephMonNode }}
      args:
       chdir: /home/{{cephuser}}/cluster
 
@@ -69,26 +70,23 @@
       state: present
       regexp: '^cluster network'
       line: 'cluster network = {{cluster_network}}/{{ cluster_netmask }}'
-  
- 
+   
    - name: Ejecuta ceph deploy install {% for host in groups.all[0:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}}
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
      register: deploy
-     shell: ceph-deploy install {{ CephAdminNode }} {% for host in groups.all[1:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}
+     shell: ceph-deploy install "{{ CephAdminNode }}" {% for host in groups.all[1:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}
      args:
       chdir: /home/{{cephuser}}/cluster
      
-   #- debug: msg="{{ deploy.stdout }}"
-  
-   ##- name: Ejecuta ceph mon create-initial
-     ##become: yes
-     ##become_method: "sudo"
-     ##become_user: "{{ cephuser }}"
-     ##shell: ceph-deploy mon create-initial
-     ##args:
-      ##chdir: /home/{{cephuser}}/cluster
+   - name: Ejecuta ceph mon create-initial
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     shell: ceph-deploy mon create-initial
+     args:
+      chdir: /home/{{cephuser}}/cluster
 
 
 
