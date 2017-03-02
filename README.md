@@ -10,7 +10,8 @@ Easy multimode Ceph cluster running on Vagrant (libvirt)
 * [Ansible](https://www.ansible.com/)
 
 ## Tested
-* ubuntu xenial (guests and host)
+* Ubuntu xenial (guests)
+* Archlinux, Ubuntu Xenial (Host)
 
 ## Configuring Ceph
 Edit vars/vars.yml variables and cluster dict, example:
