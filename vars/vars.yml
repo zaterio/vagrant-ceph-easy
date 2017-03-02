@@ -14,7 +14,8 @@ ceph_stable_release: "jewel"
 
 cluster:
    - node: ceph1
-     admin: true
+     admnode: true
+     monnode: yes
      network:
         - ipcluster: "192.168.101.101"
      osd:
