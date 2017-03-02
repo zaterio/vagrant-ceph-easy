@@ -8,18 +8,6 @@
     
   tasks:
  
- 
-    - debug: msg="ceph-deploy osd prepare {{item.key}}:{{item.value.osd}}"
-      with_dict: "{{ cluster }}"
-      
- 
- 
-    - debug: msg="ceph-deploy osd prepare {{item.key}}:{{item.value.osd}}"
-      with_netsted: 
-       - "{{ cluster }}"     
-       - 
-
-
    - name: add ceph release key
      apt_key:
       url: "https://download.ceph.com/keys/release.asc"

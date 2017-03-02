@@ -7,6 +7,8 @@ cluster = settings["cluster"]
 
 CephAdminNodes = []
 
+
+# validation (pending)
 cluster.each do |array|
  if array.include? 'admin'
   CephAdminNodes << array['node']
