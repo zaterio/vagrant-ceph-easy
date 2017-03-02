@@ -8,11 +8,20 @@
     
   tasks:
  
+   - debug: msg="Debug variables CephAdmNode {{CephAdmNode}}, CephMonNode {{CephMonNode}}, CephAllNode {{CephAllNode}}, CephOsdNode {{CephOsdNode}}"
+
+
+   - name: 'check parm is null or invalid' 
+     fail: msg="Please enter correct Params"
+          
+          
    - name: add ceph release key
      apt_key:
       url: "https://download.ceph.com/keys/release.asc"
       state: present
-      
+
+
+     
    - name: add ceph repo 
      apt_repository:
       repo: deb https://download.ceph.com/debian-{{ceph_stable_release}} xenial main 

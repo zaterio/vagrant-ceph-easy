@@ -93,10 +93,8 @@ Vagrant.configure("2") do |config|
 	config.vm.define CephAdmNode do |adm|   		       		
 	 adm.vm.provision "ansible" do |an|
 	  an.playbook = "ansible/playbooks/ceph_install.yml"
-	  an.extra_vars = { "CephAdmNode" => CephAdmNode }
-	  an.extra_vars = { "CephMonNode" => CephMonNode }
-	  an.extra_vars = { "CephAllNode" => CephAllNode }
-	  an.extra_vars = { "CephOsdNode" => CephOsdNode }
+	  puts  CephAdmNode
+	  an.extra_vars = { "CephAdmNode" => CephAdmNode, "CephMonNode" => CephMonNode, "CephAllNode" => CephAllNode,  "CephOsdNode" => CephOsdNode }
 	  an.sudo = true
 	 end
 	end 
