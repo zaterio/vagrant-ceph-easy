@@ -83,6 +83,7 @@ Vagrant.configure("2") do |config|
 	  an.extra_vars = { "CephAdmNode" => CephAdmNode }
 	  an.extra_vars = { "CephMonNode" => CephMonNode }
 	  an.extra_vars = { "CephAllNode" => CephAllNode }
+	  an.extra_vars = { "CephOsdNode" => CephOsdNode }
 	  an.sudo = true
 	 end
 	end 
