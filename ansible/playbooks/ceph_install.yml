@@ -76,7 +76,7 @@
      become_method: "sudo"
      become_user: "{{ cephuser }}"
      register: deploy
-     shell: ceph-deploy install "{{ CephAdminNode }}" {% for host in groups.all[1:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}
+     shell: ceph-deploy install "{{ CephAdmNode }}" {% for host in groups.all[1:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}
      args:
       chdir: /home/{{cephuser}}/cluster
      
