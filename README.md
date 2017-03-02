@@ -57,4 +57,4 @@ cluster:
          disk: /dev/vdd
          mount: /usr/local/osd7
 ```
-will install 3 node ceph cluster, with admin node = ceph-1 (first key in dict).
+will install 3 node ceph cluster, with admin node = ceph1.
