@@ -5,17 +5,25 @@ require 'yaml'
 settings = YAML.load_file('vars/vars.yml')
 cluster = settings["cluster"]
 
+CephAllNode = []
+CephOsdNode = []
+
 cluster.each do |array|
+ 
  CephAllNode << array['node']
+ 
  if array.include? 'admnode'
   CephAdmNode = array['node']
  end
+ 
  if array.include? 'monnode'
   CephMonNode = array['node']
  end
+ 
  if array.include? 'osdnode'
   CephOsdNode << array['node']
- end	        
+ end
+ 	        
 end 
 
 # exit is admin node is not set
@@ -25,6 +33,11 @@ end
 
 # exit is osd node is not set
 if CephOsdNode.empty?
+ abort
+end
+
+# exit is no nodes
+if CephAllNode.empty?
  abort
 end
 
@@ -62,7 +75,7 @@ Vagrant.configure("2") do |config|
 		     v.nested = true
 			 v.keymap = "es"
 			 v.volume_cache = "none"
-			 array['osd'].each do |o|
+			 array['osdnode'].each do |o|
 			  v.storage :file, :size => '20G', :cache => 'none'
 			 end
 		    end
