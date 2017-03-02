@@ -18,7 +18,7 @@ cluster:
      monnode: yes
      network:
         - ipcluster: "192.168.101.101"
-     osd:
+     osdnode:
         - name: osd0
           disk: /dev/vdb
           mount: /usr/local/osd0
@@ -29,7 +29,7 @@ cluster:
    - node: ceph2
      network:
         - ipcluster: "192.168.101.102"
-     osd:
+     osdnode:
        - name: osd2
          disk: /dev/vdb
          mount: /usr/local/osd2
@@ -43,7 +43,7 @@ cluster:
    - node: ceph3 
      network: 
         - ipcluster: "192.168.101.103"
-     osd:
+     osdnode:
        - name: osd5
          disk: /dev/vdb
          mount: /usr/local/osd5

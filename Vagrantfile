@@ -12,11 +12,19 @@ cluster.each do |array|
  end
  if array.include? 'monnode'
   CephMonNode = array['node']
- end	    
+ end
+ if array.include? 'osdnode'
+  CephOsdNode << array['node']
+ end	        
 end 
 
 # exit is admin node is not set
 if CephAdmNode.empty?
+ abort
+end
+
+# exit is osd node is not set
+if CephOsdNode.empty?
  abort
 end
 

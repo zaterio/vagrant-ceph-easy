@@ -88,7 +88,7 @@
       group: "{{ cephgroup }}"
      with_subelements: 
        - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
-       - osd
+       - osdnode
        
    - name: Fomatea discos XFS
      filesystem: 
@@ -96,7 +96,7 @@
       dev: "{{ item.1.disk }}"
      with_subelements: 
        - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
-       -  osd
+       -  osdnode
          
    - name: Monta OSD
      mount: 
@@ -106,7 +106,7 @@
       state: mounted
      with_subelements: 
        - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
-       -  osd
+       -  osdnode
 
    - name: Corrige permisos directorios OSD
      file: 
@@ -116,4 +116,4 @@
       group: "{{ cephgroup }}"
      with_subelements: 
        - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
-       -  osd
+       -  osdnode
