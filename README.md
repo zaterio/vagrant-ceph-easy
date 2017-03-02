@@ -7,7 +7,7 @@ Easy multimode Ceph cluster running on Vagrant (libvirt)
 * libvirt + qemu + virt tools on host machine
 * [vagrant-libvirt](https://github.com/vagrant-libvirt/vagrant-libvirt)
 * [vagrant-hostmanager](https://github.com/smdahlen/vagrant-hostmanager)
-* [Ansible](https://www.ansible.com/)
+* [Ansible](https://www.ansible.com/) (> 2.2.1)
 
 ## Tested
 * Ubuntu xenial (guests)
