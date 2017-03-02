@@ -78,11 +78,9 @@ Vagrant.configure("2") do |config|
 					 cluster.each do |array2|
 						if array2.include? 'monnode'
 					     CephMonNode = array2['node']
-					    else
-					     CephMonNode = array['node']
 					    end
-					 end
-
+					 end	
+					 CephMonNode ||= array['node']
 					 an2.extra_vars = { "CephMonNode" => CephMonNode }
 					 an2.sudo = true
 					end
