@@ -1,0 +1,77 @@
+---
+- hosts: all 
+  vars:   
+   cluster:
+   - node: ceph1
+     admin: true
+     network:
+        - ipcluster: "192.168.101.101"
+     osd:
+        - name: osd0
+          disk: "/dev/vdb"
+          mount: "/usr/local/osd0"
+        - name: osd1
+          disk: "/dev/vdc"
+          mount: "/usr/local/osd1" 
+    
+   - node: ceph2
+     network:
+        - ipcluster: "192.168.101.102"
+     osd:
+       - name: osd2
+         disk: "/dev/vdb"
+         mount: "/usr/local/osd2"
+       - name: osd3
+         disk: "/dev/vdc"
+         mount: "/usr/local/osd3"
+       - name: osd4
+         disk: "/dev/vdd"
+         mount: "/usr/local/osd4"
+    
+   - node: localhost 
+     network: 
+        - ipcluster: "192.168.101.103"
+     osd:
+       - name: osd5
+         disk: "/dev/vdb"
+         mount: "/usr/local/osd5"
+       - name: osd6
+         disk: "/dev/vdc"
+         mount: "/usr/local/osd6"
+       - name: osd7
+         disk: "/dev/vdd"
+         mount: "/usr/local/osd7" 
+       
+  tasks:
+    # osd prepare
+    - debug: msg="{{item.0.node}} {{item.1.mount}}"
+      with_subelements: 
+       - "{{cluster}}"
+       - osd
+    
+    # mount   
+    - debug: msg="src = {{item.1.mount}} disk = {{item.1.disk}}"
+      with_subelements: 
+       - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
+       -  osd
+    # xfs
+    - debug: msg=" disk = {{item.1.disk}}"
+      with_subelements: 
+       - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
+       -  osd
+
+    # crea dirs & fix permisions
+    - debug: msg=" disk = {{item.1.mount}}"
+      with_subelements: 
+       - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
+       - osd
+
+    # find admin
+    - debug: msg=" el admin1 es {{item.node}}"
+      with_items: 
+       - "{{cluster| selectattr('admin', 'defined' )|list}}"
+
+
+    # find admin2
+    - debug: msg="el admin2 es {{cluster| selectattr('admin', 'defined')| map(attribute='node')| join(',')}}"
+

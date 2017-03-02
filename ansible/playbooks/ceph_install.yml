@@ -7,85 +7,105 @@
     
     
   tasks:
-  
-   - debug: msg="Running ceph playbook on {{ inventory_hostname }}"
+ 
+ 
+    - debug: msg="ceph-deploy osd prepare {{item.key}}:{{item.value.osd}}"
+      with_dict: "{{ cluster }}"
+      
+ 
+ 
+    - debug: msg="ceph-deploy osd prepare {{item.key}}:{{item.value.osd}}"
+      with_netsted: 
+       - "{{ cluster }}"     
+       - 
 
 
-   - name: add ceph release key
-     apt_key:
-      url: "https://download.ceph.com/keys/release.asc"
-      state: present
+   #- name: add ceph release key
+     #apt_key:
+      #url: "https://download.ceph.com/keys/release.asc"
+      #state: present
       
-   - name: add ceph repo 
-     apt_repository:
-      repo: deb https://download.ceph.com/debian-{{ceph_stable_release}} xenial main 
-      state: present
-      filename: 'ceph'
+   #- name: add ceph repo 
+     #apt_repository:
+      #repo: deb https://download.ceph.com/debian-{{ceph_stable_release}} xenial main 
+      #state: present
+      #filename: 'ceph'
       
-   - name: Update repositories cache and install "ceph-deploy" package
-     apt:
-      name: ceph-deploy
-      update_cache: yes 
+   #- name: Update repositories cache and install "ceph-deploy" package
+     #apt:
+      #name: ceph-deploy
+      #update_cache: yes 
           
-   - name: Crea directorios
-     become: yes
-     become_method: "sudo"
-     become_user: "{{ cephuser }}" 
-     file:
-      path: /home/{{cephuser}}/cluster
-      state: directory      
+   #- name: Crea directorios
+     #become: yes
+     #become_method: "sudo"
+     #become_user: "{{ cephuser }}" 
+     #file:
+      #path: /home/{{cephuser}}/cluster
+      #state: directory      
 
    
-   - name: ceph deploy node 1 
-     become: yes
-     become_method: "sudo"
-     become_user: "{{ cephuser }}"
-     shell: ceph-deploy new {{ inventory_hostname }} 
-     args:
-      chdir: /home/{{cephuser}}/cluster
+   #- name: ceph deploy node 1 
+     #become: yes
+     #become_method: "sudo"
+     #become_user: "{{ cephuser }}"
+     #shell: ceph-deploy new {{ inventory_hostname }} 
+     #args:
+      #chdir: /home/{{cephuser}}/cluster
 
 
-   - name: Cambia OSD poll size a 2
-     become: yes
-     become_method: "sudo"
-     become_user: "{{ cephuser }}"
-     lineinfile:
-      dest: /home/{{cephuser}}/cluster/ceph.conf
-      state: present
-      regexp: '^osd pool default size'
-      line: 'osd pool default size = 2'
+   #- name: Cambia OSD poll size a 2
+     #become: yes
+     #become_method: "sudo"
+     #become_user: "{{ cephuser }}"
+     #lineinfile:
+      #dest: /home/{{cephuser}}/cluster/ceph.conf
+      #state: present
+      #regexp: '^osd pool default size'
+      #line: 'osd pool default size = 2'
 
-   - name: Agrega public network
-     become: yes
-     become_method: "sudo"
-     become_user: "{{ cephuser }}"
-     lineinfile:
-      dest: /home/{{cephuser}}/cluster/ceph.conf
-      state: present
-      regexp: '^public network'
-      line: 'public network = {{ public_network }}/{{ public_netmask }}'
+   #- name: Agrega public network
+     #become: yes
+     #become_method: "sudo"
+     #become_user: "{{ cephuser }}"
+     #lineinfile:
+      #dest: /home/{{cephuser}}/cluster/ceph.conf
+      #state: present
+      #regexp: '^public network'
+      #line: 'public network = {{ public_network }}/{{ public_netmask }}'
 
-   - name: Agrega cluster network
-     become: yes
-     become_method: "sudo"
-     become_user: "{{ cephuser }}"
-     lineinfile:
-      dest: /home/{{cephuser}}/cluster/ceph.conf
-      state: present
-      regexp: '^cluster network'
-      line: 'cluster network = {{cluster_network}}/{{ cluster_netmask }}'
+   #- name: Agrega cluster network
+     #become: yes
+     #become_method: "sudo"
+     #become_user: "{{ cephuser }}"
+     #lineinfile:
+      #dest: /home/{{cephuser}}/cluster/ceph.conf
+      #state: present
+      #regexp: '^cluster network'
+      #line: 'cluster network = {{cluster_network}}/{{ cluster_netmask }}'
  
  
-   #- debug: msg="preparing ceph-deploy install {{ CephAdminNode }} {% for host in groups.all[1:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}"
+   ##- debug: msg="preparing ceph-deploy install {{ CephAdminNode }} {% for host in groups.all[1:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}"
  
  
-   - name: Ejecuta ceph deploy install {% for host in groups.all[0:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}}
-     become: yes
-     become_method: "sudo"
-     become_user: "{{ cephuser }}"
-     register: deploy
-     shell: ceph-deploy install {{ CephAdminNode }} {% for host in groups.all[1:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}
-     args:
-      chdir: /home/{{cephuser}}/cluster
+   #- name: Ejecuta ceph deploy install {% for host in groups.all[0:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}}
+     #become: yes
+     #become_method: "sudo"
+     #become_user: "{{ cephuser }}"
+     #register: deploy
+     #shell: ceph-deploy install {{ CephAdminNode }} {% for host in groups.all[1:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}
+     #args:
+      #chdir: /home/{{cephuser}}/cluster
      
-   - debug: msg="{{ deploy.stdout }}"
+   #- debug: msg="{{ deploy.stdout }}"
+  
+   ##- name: Ejecuta ceph mon create-initial
+     ##become: yes
+     ##become_method: "sudo"
+     ##become_user: "{{ cephuser }}"
+     ##shell: ceph-deploy mon create-initial
+     ##args:
+      ##chdir: /home/{{cephuser}}/cluster
+
+
+

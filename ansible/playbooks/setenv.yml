@@ -76,31 +76,39 @@
       key: "{{ lookup('file', '../templates/ssh/id_rsa.pub') }}" 
 
    - name: Crea directorios OSD
-     file: 
-      path: /usr/local/{{ item }}
-      state: directory
-     with_items: "{{ cluster[inventory_hostname]['osd'] }}"
-
-
-   - name: Fomatea discos XFS
-     filesystem: 
-      fstype: xfs
-      dev: "{{ cluster[inventory_hostname]['osd'][item]['disk'] }}"
-     with_items: "{{ cluster[inventory_hostname]['osd'] }}"
-
-
-   - name: Monta OSD
-     mount: 
-      name: /usr/local/{{ item }}
-      src: "{{ cluster[inventory_hostname]['osd'][item]['disk'] }}"
-      fstype: xfs
-      state: mounted
-     with_items: "{{ cluster[inventory_hostname]['osd'] }}"
-
-   - name: Corrige permisos directorios OSD
-     file: 
-      path: /usr/local/{{ item }}
+     file:
+      path: "{{ item.1.mount }}"
       state: directory
       owner: "{{ cephuser }}"
       group: "{{ cephgroup }}"
-     with_items: "{{ cluster[inventory_hostname]['osd'] }}"
+     with_subelements: 
+       - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
+       - osd
+       
+   - name: Fomatea discos XFS
+     filesystem: 
+      fstype: xfs
+      dev: "{{ item.1.disk }}"
+     with_subelements: 
+       - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
+       -  osd
+         
+   - name: Monta OSD
+     mount: 
+      name: "{{item.1.mount}}"
+      src: "{{ item.1.disk }}"
+      fstype: xfs
+      state: mounted
+     with_subelements: 
+       - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
+       -  osd
+
+   - name: Corrige permisos directorios OSD
+     file: 
+      path: "{{item.1.mount}}"
+      state: directory
+      owner: "{{ cephuser }}"
+      group: "{{ cephgroup }}"
+     with_subelements: 
+       - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
+       -  osd
