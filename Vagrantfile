@@ -5,19 +5,21 @@ require 'yaml'
 settings = YAML.load_file('vars/vars.yml')
 cluster = settings["cluster"]
 
-CephAdmNodes = []
-
-
-# validation (pending)
 cluster.each do |array|
  if array.include? 'admnode'
-  CephAdmNodes << array['node']
- end 
- array['network'].each do |net|
-  if net.include? 'ipcluster'
-  end
+  CephAdmNode = array['node']
  end
+ if array.include? 'monnode'
+  CephMonNode = array['node']
+ end	    
+end 
+
+# exit is admin node is not set
+if CephAdmNode.empty?
+ abort
 end
+
+CephMonNode ||= CephAdmNode
 
 Vagrant.configure("2") do |config|
 
@@ -66,25 +68,13 @@ Vagrant.configure("2") do |config|
 		end
 	end
 
-
-	cluster.each do |array|
-	 if array.include? 'admnode'
-	    CephAdmNode = array['node']
-		config.vm.define CephAdmNode do |admnode|   		       		
-				    admnode.vm.provision "ansible" do |an2|
-					 an2.playbook = "ansible/playbooks/ceph_install.yml"
-					 an2.extra_vars = { "CephAdmNode" => CephAdmNode }
-
-					 cluster.each do |array2|
-						if array2.include? 'monnode'
-					     CephMonNode = array2['node']
-					    end
-					 end	
-					 CephMonNode ||= array['node']
-					 an2.extra_vars = { "CephMonNode" => CephMonNode }
-					 an2.sudo = true
-					end
-		end
-	 end 
-	end
-end		
+	config.vm.define CephAdmNode do |adm|   		       		
+	 adm.vm.provision "ansible" do |an|
+	  an.playbook = "ansible/playbooks/ceph_install.yml"
+	  an.extra_vars = { "CephAdmNode" => CephAdmNode }
+	  an.extra_vars = { "CephMonNode" => CephMonNode }
+	  an.sudo = true
+	 end
+	end 
+end
+	
