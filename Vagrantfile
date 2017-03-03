@@ -65,7 +65,7 @@ Vagrant.configure("2") do |config|
 			        :libvirt__guest_ipv6 => "no",
 			        :libvirt__forward_mode => "none",
 			        :libvirt__network_name => settings["cluster_network_name"],
-			        :libvirt__netmask => settings["cluster_netmask"]
+			        :libvirt__netmask => settings["cluster_network_netmask"]
 		    end    
 		        
 		        
