@@ -68,7 +68,7 @@
       dest: /home/{{cephuser}}/cluster/ceph.conf
       state: present
       regexp: '^public network'
-      line: 'public network = {{ public_network }}/{{ public_netmask }}'
+      line: 'public network = {{ public_network }}/{{ public_netwrok_netmask }}'
 
    - name: Agrega cluster network
      become: yes
@@ -78,7 +78,7 @@
       dest: /home/{{cephuser}}/cluster/ceph.conf
       state: present
       regexp: '^cluster network'
-      line: 'cluster network = {{cluster_network}}/{{ cluster_netmask }}'
+      line: 'cluster network = {{cluster_network}}/{{ cluster_network_netmask }}'
    
    - name: Ejecuta ceph deploy install {% for host in groups.all[0:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}}
      become: yes
