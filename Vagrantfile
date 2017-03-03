@@ -7,6 +7,7 @@ cluster = settings["cluster"]
 
 CephAllNode = []
 CephOsdNode = []
+CephMonNode = []
 
 cluster.each do |array|
  
@@ -17,7 +18,7 @@ cluster.each do |array|
  end
  
  if array.include? 'monnode'
-  CephMonNode = array['node']
+  CephMonNode << array['node']
  end
  
  if array.include? 'osdnode'
