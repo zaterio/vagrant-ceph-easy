@@ -76,7 +76,10 @@ Vagrant.configure("2") do |config|
 			 v.keymap = "es"
 			 v.volume_cache = "none"
 			 array['osdnode'].each do |disk|
-			  v.storage :file, :size => disk['size'], :dev => disk['dev'], :cache => 'none', :bus => 'virtio'
+			  v.storage :file, :size => disk['size'], 
+						:dev => disk['dev'], 
+						:cache => 'none', 
+						:bus => 'virtio'
 			 end
 		    end
 		    
