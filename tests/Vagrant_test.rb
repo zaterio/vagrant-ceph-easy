@@ -7,17 +7,19 @@ cluster = settings["cluster"]
 
 CephAllNode = []
 CephOsdNode = []
+CephMonNode = []
 
 cluster.each do |array|
  
  CephAllNode << array['node']
  
- if array.include? 'admnode'
+ if array.include? 'admnode' and not defined? CephAdmNode
   CephAdmNode = array['node']
+  puts "CephAdmNode #{CephAdmNode}"
  end
  
  if array.include? 'monnode'
-  CephMonNode = array['node']
+  CephMonNode << array['node']
  end
  
  if array.include? 'osdnode'

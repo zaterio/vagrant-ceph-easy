@@ -12,7 +12,7 @@ cluster.each do |array|
  
  CephAllNode << array['node']
  
- if array.include? 'admnode'
+ if array.include? 'admnode' and not defined? CephAdmNode
   CephAdmNode = array['node']
  end
  

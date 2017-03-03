@@ -29,6 +29,7 @@ cluster:
           size: 30
     
    - node: ceph2
+     admnode: true
      network:
         - ipcluster: "192.168.101.102"
      osdnode:
