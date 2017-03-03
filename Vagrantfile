@@ -79,7 +79,8 @@ Vagrant.configure("2") do |config|
 			  v.storage :file, :size => disk['size'], 
 						:dev => disk['dev'], 
 						:cache => 'none', 
-						:bus => 'virtio'
+						:bus => 'virtio',
+						:type => 'qcow2'
 			 end
 		    end
 		    
