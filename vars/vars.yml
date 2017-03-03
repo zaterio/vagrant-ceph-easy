@@ -20,36 +20,44 @@ cluster:
         - ipcluster: "192.168.101.101"
      osdnode:
         - name: osd0
-          disk: /dev/vdb
+          dev: vdb
           mount: /usr/local/osd0
+          size: 5
         - name: osd1
-          disk: /dev/vdc
+          dev: vdc
           mount: /usr/local/osd1
+          size: 30
     
    - node: ceph2
      network:
         - ipcluster: "192.168.101.102"
      osdnode:
        - name: osd2
-         disk: /dev/vdb
+         dev: vdb
+         size: 5
          mount: /usr/local/osd2
        - name: osd3
-         disk: /dev/vdc
+         dev: vdc
+         size: 10
          mount: /usr/local/osd3
        - name: osd4
-         disk: /dev/vdd
+         dev: vdd
          mount: /usr/local/osd4
+         size: 20
     
    - node: ceph3 
      network: 
         - ipcluster: "192.168.101.103"
      osdnode:
        - name: osd5
-         disk: /dev/vdb
+         dev: vdb
+         size: 10
          mount: /usr/local/osd5
        - name: osd6
-         disk: /dev/vdc
+         dev: vdc
+         size: 10
          mount: /usr/local/osd6
        - name: osd7
-         disk: /dev/vdd
+         dev: vdd
          mount: /usr/local/osd7
+         size: 10

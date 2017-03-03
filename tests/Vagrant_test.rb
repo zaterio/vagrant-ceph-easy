@@ -2,54 +2,57 @@
 # vi: set ft=ruby :
 
 require 'yaml'
-settings = YAML.load_file('vars/vars.yml')
+settings = YAML.load_file('../vars/vars.yml')
 cluster = settings["cluster"]
 
-CephAdminNode = []
+CephAllNode = []
+CephOsdNode = []
 
 cluster.each do |array|
- if array.include? 'admin'
- CephAdminNode << array['node']
+ 
+ CephAllNode << array['node']
+ 
+ if array.include? 'admnode'
+  CephAdmNode = array['node']
  end
+ 
+ if array.include? 'monnode'
+  CephMonNode = array['node']
+ end
+ 
+ if array.include? 'osdnode'
+  CephOsdNode << array['node']
+ end
+ 	        
+end 
+
+# exit is admin node is not set
+if CephAdmNode.empty?
+ abort
 end
 
+# exit is osd node is not set
+if CephOsdNode.empty?
+ abort
+end
 
+# exit is no nodes
+if CephAllNode.empty?
+ abort
+end
 
-Vagrant.configure("2") do |config|
+CephMonNode ||= CephAdmNode
 
-	config.vm.box = "elastic/ubuntu-16.04-x86_64"
-	config.vm.synced_folder ".", "/vagrant", type: "nfs", disabled: "true"
-	config.hostmanager.enabled = false
-	config.hostmanager.manage_host = false
-	config.hostmanager.manage_guest = true
-	config.hostmanager.include_offline = false
-	config.hostmanager.ignore_private_ip = false
-     
-    
-     cluster.each do |array|
-       
-	   config.vm.define array['node'] do |node|   		    
-		   node.vm.hostname =  array['node']     
-		    
-		    node.vm.network :private_network, 
-		        :ip => array['ip_cluster'],
-		        :libvirt__dhcp_enabled => "false",
-		        :libvirt__forward_mode => "none",
-		        :libvirt__network_name => settings["cluster_network_name"],
-		        :libvirt__netmask => settings["cluster_netmask"]
-		    
-		    node.vm.provider :libvirt do |v|
-		     v.cpus = 1
-		     v.memory = 1024
-		     v.nested = true
-			 v.keymap = "es"
-			 v.volume_cache = "none"
-			 array['osd'].each do |o|
-			  v.storage :file, :size => '20G', :cache => 'none'
-			 end
-		    end      
-		    
-		    
-		end
-	end
-end		
+    cluster.each do |array|
+			array['network'].each do |net|
+			        puts net['ipcluster']
+					puts settings["cluster_network_name"]
+					puts settings["cluster_netmask"]
+		    end    
+		        
+     		array['osdnode'].each do |disk|
+			  puts disk['size']
+			  puts disk['dev']
+			end 
+   	end
+	

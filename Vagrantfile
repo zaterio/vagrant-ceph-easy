@@ -45,7 +45,7 @@ CephMonNode ||= CephAdmNode
 
 Vagrant.configure("2") do |config|
 
-	config.vm.box = "xenial0103201702"
+	config.vm.box = "xenial2802201701"
 	config.vm.synced_folder ".", "/vagrant", type: "nfs", disabled: "true"
 	config.hostmanager.enabled = false
 	config.hostmanager.manage_host = false
@@ -75,17 +75,17 @@ Vagrant.configure("2") do |config|
 		     v.nested = true
 			 v.keymap = "es"
 			 v.volume_cache = "none"
-			 array['osdnode'].each do |o|
-			  v.storage :file, :size => '20G', :cache => 'none'
+			 array['osdnode'].each do |disk|
+			  v.storage :file, :size => disk['size'], :dev => disk['dev'], :cache => 'none'
 			 end
 		    end
 		    
-		    #node.vm.provision :hostmanager
+		    node.vm.provision :hostmanager
 		  		    
-			#node.vm.provision "ansible" do |an|
-			 #an.playbook = "ansible/playbooks/setenv.yml"
-			 #an.sudo = true
-			#end	   
+			node.vm.provision "ansible" do |an|
+			 an.playbook = "ansible/playbooks/setenv.yml"
+			 an.sudo = true
+			end	   
 	
 		end
 	end

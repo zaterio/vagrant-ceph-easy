@@ -19,8 +19,7 @@
    - name: instala paquetes
      apt: name="{{ item }}" state=present
      with_items:
-      - ntp
-       
+      - ntp     
      
    - name: Allow vagrant to have passwordless sudo
      lineinfile:
@@ -80,40 +79,40 @@
       state: present
       key: "{{ lookup('file', '../templates/ssh/id_rsa.pub') }}" 
 
-   - name: Crea directorios OSD
-     file:
-      path: "{{ item.1.mount }}"
-      state: directory
-      owner: "{{ cephuser }}"
-      group: "{{ cephgroup }}"
-     with_subelements: 
-       - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
-       - osdnode
+   #- name: Crea directorios OSD
+     #file:
+      #path: "{{ item.1.mount }}"
+      #state: directory
+      #owner: "{{ cephuser }}"
+      #group: "{{ cephgroup }}"
+     #with_subelements: 
+       #- "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
+       #- osdnode
        
-   - name: Fomatea discos XFS
-     filesystem: 
-      fstype: xfs
-      dev: "{{ item.1.disk }}"
-     with_subelements: 
-       - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
-       -  osdnode
+   #- name: Fomatea discos XFS
+     #filesystem: 
+      #fstype: xfs
+      #dev: "{{ item.1.disk }}"
+     #with_subelements: 
+       #- "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
+       #-  osdnode
          
-   - name: Monta OSD
-     mount: 
-      name: "{{item.1.mount}}"
-      src: "{{ item.1.disk }}"
-      fstype: xfs
-      state: mounted
-     with_subelements: 
-       - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
-       -  osdnode
+   #- name: Monta OSD
+     #mount: 
+      #name: "{{item.1.mount}}"
+      #src: "{{ item.1.disk }}"
+      #fstype: xfs
+      #state: mounted
+     #with_subelements: 
+       #- "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
+       #-  osdnode
 
-   - name: Corrige permisos directorios OSD
-     file: 
-      path: "{{item.1.mount}}"
-      state: directory
-      owner: "{{ cephuser }}"
-      group: "{{ cephgroup }}"
-     with_subelements: 
-       - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
-       -  osdnode
+   #- name: Corrige permisos directorios OSD
+     #file: 
+      #path: "{{item.1.mount}}"
+      #state: directory
+      #owner: "{{ cephuser }}"
+      #group: "{{ cephgroup }}"
+     #with_subelements: 
+       #- "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
+       #-  osdnode
