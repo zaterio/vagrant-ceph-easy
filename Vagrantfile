@@ -37,6 +37,10 @@ CephMonNode ||= CephAdmNode
 CephNonAdmNode = CephAllNode.clone
 CephNonAdmNode.delete(CephAdmNode)
 
+if CephNonAdmNode.empty?
+ abort
+end 
+
 Vagrant.configure("2") do |config|
 
 	config.vm.box = "xenial2802201701"
