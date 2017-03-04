@@ -2,6 +2,7 @@ cephuser: "cephadmin"
 cephgroup: "cephadmin"
 password: $1$SomeSalt$VwjbgiHWuE0VhPB8KxO28.
 dev: true
+cluster_name: ceph
 
 public_network: "192.168.100.0"
 public_network_netmask: "255.255.255.0"

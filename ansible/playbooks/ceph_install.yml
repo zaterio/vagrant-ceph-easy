@@ -19,7 +19,7 @@
      apt_repository:
       repo: deb https://download.ceph.com/debian-{{ceph_stable_release}} xenial main 
       state: present
-      filename: ceph
+      filename: 'ceph'
       
    - name: Update repositories cache and install "ceph-deploy" package
      apt:
@@ -33,12 +33,12 @@
       state: directory      
 
    
-   - name: ceph-deploy new {% for host in CephMonNode %}{{ host }}{%- if not loop.last -%} {% endif %}{% endfor %}
+   - name: ceph-deploy --cluster {{ cluster_name }} new {% for host in CephMonNode %}{{ host }}{%- if not loop.last -%} {% endif %}{% endfor %}
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
      register: deploy
-     shell: ceph-deploy new {% for host in CephMonNode %}{{ host }}{%- if not loop.last -%} {% endif %}{% endfor %}
+     shell: ceph-deploy --cluster {{ cluster_name }} new {% for host in CephMonNode %}{{ host }}{%- if not loop.last -%} {% endif %}{% endfor %}
      args:
       chdir: /home/{{cephuser}}/cluster
 
