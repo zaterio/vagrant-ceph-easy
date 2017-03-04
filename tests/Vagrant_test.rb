@@ -15,7 +15,6 @@ cluster.each do |array|
  
  if array.include? 'admnode' and not defined? CephAdmNode
   CephAdmNode = array['node']
-  puts "CephAdmNode #{CephAdmNode}"
  end
  
  if array.include? 'monnode'
@@ -28,22 +27,14 @@ cluster.each do |array|
  	        
 end 
 
-# exit is admin node is not set
-if CephAdmNode.empty?
- abort
-end
-
-# exit is osd node is not set
-if CephOsdNode.empty?
- abort
-end
-
-# exit is no nodes
-if CephAllNode.empty?
+# exit is admin node osd nodes or no node defined
+if not defined? CephAdmNode or CephOsdNode.empty? or CephAllNode.empty?
  abort
 end
 
 CephMonNode ||= CephAdmNode
+
+puts "mon: #{CephMonNode}"
 
     cluster.each do |array|
 			array['network'].each do |net|

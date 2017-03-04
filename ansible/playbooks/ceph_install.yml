@@ -8,25 +8,18 @@
     
   tasks:
  
-   - debug: msg="Debug variables CephAdmNode {{CephAdmNode}}, CephMonNode {{CephMonNode}}, CephAllNode {{CephAllNode}}, CephOsdNode {{CephOsdNode}}"
-
-
-   - name: 'check parm is null or invalid' 
-     fail: msg="Please enter correct Params"
-          
+   - debug: msg="CephAdmNode {{CephAdmNode}} CephMonNode {% for host in CephMonNode %}{{ host }}{%- if not loop.last -%},{% endif %}{% endfor %} CephAllNode {% for host in CephAllNode %}{{ host }}{%- if not loop.last -%},{% endif %}{% endfor %} CephOsdNode {% for host in CephOsdNode %}{{ host }}{%- if not loop.last -%},{% endif %}{% endfor %}"         
           
    - name: add ceph release key
      apt_key:
       url: "https://download.ceph.com/keys/release.asc"
       state: present
-
-
      
    - name: add ceph repo 
      apt_repository:
       repo: deb https://download.ceph.com/debian-{{ceph_stable_release}} xenial main 
       state: present
-      filename: 'ceph'
+      filename: ceph
       
    - name: Update repositories cache and install "ceph-deploy" package
      apt:
@@ -40,12 +33,12 @@
       state: directory      
 
    
-   - name: ceph-deploy new {{CephMonNode}}
+   - name: ceph-deploy new {% for host in CephMonNode %}{{ host }}{%- if not loop.last -%} {% endif %}{% endfor %}
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
      register: deploy
-     shell: ceph-deploy new {{ CephMonNode }}
+     shell: ceph-deploy new {% for host in CephMonNode %}{{ host }}{%- if not loop.last -%} {% endif %}{% endfor %}
      args:
       chdir: /home/{{cephuser}}/cluster
 
@@ -68,17 +61,7 @@
       dest: /home/{{cephuser}}/cluster/ceph.conf
       state: present
       regexp: '^public network'
-      line: 'public network = {{ public_network }}/{{ public_netwrok_netmask }}'
-
-   - name: Agrega cluster network
-     become: yes
-     become_method: "sudo"
-     become_user: "{{ cephuser }}"
-     lineinfile:
-      dest: /home/{{cephuser}}/cluster/ceph.conf
-      state: present
-      regexp: '^cluster network'
-      line: 'cluster network = {{cluster_network}}/{{ cluster_network_netmask }}'
+      line: 'public network = {{ public_network }}/{{ public_network_netmask }}'
    
    - name: Ejecuta ceph deploy install {% for host in groups.all[0:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}}
      become: yes
@@ -88,6 +71,7 @@
      shell: ceph-deploy install {% for host in groups.all[0:] -%}{{ hostvars[host].inventory_hostname }} {% endfor %}}
      args:
       chdir: /home/{{cephuser}}/cluster
+     when: not dev
      
    - name: Ejecuta ceph mon create-initial
      become: yes
@@ -96,6 +80,6 @@
      shell: ceph-deploy mon create-initial
      args:
       chdir: /home/{{cephuser}}/cluster
-
+     when: not dev
 
 

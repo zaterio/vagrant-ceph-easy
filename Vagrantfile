@@ -32,6 +32,7 @@ if not defined? CephAdmNode or CephOsdNode.empty? or CephAllNode.empty?
  abort
 end
 
+puts  CephMonNode
 CephMonNode ||= CephAdmNode
 
 Vagrant.configure("2") do |config|
@@ -55,8 +56,8 @@ Vagrant.configure("2") do |config|
 			        :libvirt__dhcp_enabled => "false",
 			        :libvirt__guest_ipv6 => "no",
 			        :libvirt__forward_mode => "none",
-			        :libvirt__network_name => settings["cluster_network_name"],
-			        :libvirt__netmask => settings["cluster_network_netmask"]
+			        :libvirt__network_name => settings["public_network_name"],
+			        :libvirt__netmask => settings["public_network_netmask"]
 		    end    
 		        
 		        
