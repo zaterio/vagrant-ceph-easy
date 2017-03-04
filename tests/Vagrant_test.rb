@@ -34,6 +34,12 @@ end
 
 CephMonNode ||= CephAdmNode
 
+CephNonAdmNode = CephAllNode.clone
+CephNonAdmNode.delete(CephAdmNode)
+
+
+puts "CephNonAdmNode #{CephNonAdmNode}"
+puts "CephAllNode #{CephAllNode}"
 puts "mon: #{CephMonNode}"
 
     cluster.each do |array|

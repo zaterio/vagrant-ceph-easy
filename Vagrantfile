@@ -32,8 +32,10 @@ if not defined? CephAdmNode or CephOsdNode.empty? or CephAllNode.empty?
  abort
 end
 
-puts  CephMonNode
 CephMonNode ||= CephAdmNode
+
+CephNonAdmNode = CephAllNode.clone
+CephNonAdmNode.delete(CephAdmNode)
 
 Vagrant.configure("2") do |config|
 
@@ -93,8 +95,9 @@ Vagrant.configure("2") do |config|
 	  an.extra_vars = { "CephAdmNode" => CephAdmNode, 
 						"CephMonNode" => CephMonNode, 
 						"CephAllNode" => CephAllNode,  
-						"CephOsdNode" => CephOsdNode 
-					  }
+						"CephOsdNode" => CephOsdNode, 
+					    "CephNonAdmNode" => CephNonAdmNode
+					   }
 	 end
 	end 
 end
