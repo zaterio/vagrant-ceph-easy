@@ -73,8 +73,23 @@
       state: present
       regexp: '^public network'
       line: 'public network = {{ public_network }}/{{ public_network_netmask }}'
+
+
+    # Install Ceph packages on remote hosts. As a first step it installs yum-plugin-priorities in admin and other nodes using passwordless ssh and sudo
+    # so that Ceph packages from upstream repository get more priority. It then detects the platform and distribution for the hosts and installs Ceph 
+    # normally by downloading distro compatible packages if adequate repo for Ceph is already added. --release flag 
+    # is used to get the latest release for installation. During detection of platform and distribution before installation, if it finds the 
+    # distro.init to be sysvinit (Fedora, CentOS/RHEL etc), it doesn’t allow installation with custom cluster name and uses the default name 
+    # ceph for the cluster.
+    # If the user explicitly specifies a custom repo url with --repo-url for installation, anything detected from the configuration will be overridden
+    # and the custom repository location will be used for installation of Ceph packages. 
+    # If required, valid custom repositories are also detected and installed. 
+    # In case of installation from a custom repo a boolean is used to determine the logic needed to proceed with a custom repo installation. 
+    # A custom repo install helper is used that goes through config checks to retrieve repos (and any extra repos defined) and installs them. 
+    # cd_conf is the object built from argparse that holds the flags and information needed to determine what metadata from the configuration is to 
+    # be used. A user can also opt to install only the repository without installing Ceph and its dependencies by using --repo option.   
    
-   - name: Ejecuta ceph deploy install {% for host in CephAllNode %}{{ host }}{%- if not loop.last -%} {% endif %}{% endfor %}}
+   - name: Ejecuta ceph deploy install --release {{ ceph_stable_release }} {% for host in CephAllNode %}{{ host }}{%- if not loop.last -%} {% endif %}{% endfor %}}
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
