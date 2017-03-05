@@ -51,7 +51,7 @@
      register: deploy
      shell: ceph-deploy --cluster {{ cluster_name }} new {% for host in CephMonNode %}{{ host }}{%- if not loop.last -%} {% endif %}{% endfor %}
      args:
-      chdir: /home/{{cephuser}}/cluster
+      chdir: /home/{{cephuser}}/{{ cluster_name }}
 
 
    - name: Cambia OSD poll size a 2
@@ -59,7 +59,7 @@
      become_method: "sudo"
      become_user: "{{ cephuser }}"
      lineinfile:
-      dest: /home/{{cephuser}}/cluster/ceph.conf
+      dest: /home/{{cephuser}}/{{ cluster_name }}/ceph.conf
       state: present
       regexp: '^osd pool default size'
       line: 'osd pool default size = 2'
@@ -69,7 +69,7 @@
      become_method: "sudo"
      become_user: "{{ cephuser }}"
      lineinfile:
-      dest: /home/{{cephuser}}/cluster/ceph.conf
+      dest: /home/{{cephuser}}/{{ cluster_name }}/ceph.conf
       state: present
       regexp: '^public network'
       line: 'public network = {{ public_network }}/{{ public_network_netmask }}'
@@ -96,7 +96,7 @@
      register: deploy
      shell: ceph deploy install {% for host in CephAllNode %}{{ host }}{%- if not loop.last -%} {% endif %}{% endfor %}}
      args:
-      chdir: /home/{{cephuser}}/cluster
+      chdir: /home/{{cephuser}}/{{ cluster_name }}
      
    - name: Ejecuta ceph mon create-initial
      become: yes
@@ -104,9 +104,7 @@
      become_user: "{{ cephuser }}"
      shell: ceph-deploy mon create-initial
      args:
-      chdir: /home/{{cephuser}}/cluster
-
-
+      chdir: /home/{{cephuser}}/{{ cluster_name }}
 
 	#ceph-deploy osd prepare {node-name}:{data-disk}[:{journal-disk}]
 
