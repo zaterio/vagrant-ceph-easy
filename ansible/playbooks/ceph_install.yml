@@ -29,9 +29,20 @@
    - name: Crea directorios
      become_user: "{{ cephuser }}" 
      file:
-      path: /home/{{cephuser}}/cluster
+      path: /home/{{cephuser}}/{{ cluster_name }}
       state: directory      
 
+   
+    # Start deploying a new cluster and write a configuration file and keyring for it. 
+    # It tries to copy ssh keys from admin node to gain passwordless ssh to monitor node(s).
+    # validates host IP, creates a cluster with a new initial monitor node or nodes for monitor quorum
+    # a ceph configuration file, a monitor secret keyring and a log file for the new cluster. 
+    # It populates the newly created Ceph configuration file with fsid of cluster, 
+    # hostnames and IP addresses of initial monitor members under [global] section.
+    # Other options like --no-ssh-copykey, --fsid, --cluster-network and --public-network can also be used with this command  .
+    # If more than one network interface is used, public network setting has to be added under [global] section of Ceph configuration file. 
+    # If the public subnet is given, new command will choose the one IP from the remote host that exists within the subnet range. 
+    # Public network can also be added at runtime using --public-network option with the command as mentioned above.
    
    - name: ceph-deploy --cluster {{ cluster_name }} new {% for host in CephMonNode %}{{ host }}{%- if not loop.last -%} {% endif %}{% endfor %}
      become: yes
@@ -80,4 +91,7 @@
      args:
       chdir: /home/{{cephuser}}/cluster
 
+
+
+	#ceph-deploy osd prepare {node-name}:{data-disk}[:{journal-disk}]
 
