@@ -3,8 +3,7 @@
   remote_user: root
 
   vars_files:
-   - ../../vars/vars.yml
-    
+   - ../../vars/vars.yml    
     
   tasks:
  
@@ -21,7 +20,7 @@
       repo: deb https://download.ceph.com/debian-{{ceph_stable_release}} xenial main 
       state: present
       filename: 'ceph'
-     when: not dev  
+     when: not dev
      
    - name: Update repositories cache and install "ceph-deploy" package
      apt:
@@ -35,25 +34,23 @@
       path: /home/{{cephuser}}/{{ cluster_name }}
       state: directory
       
-   - name: Ejecuta ceph deploy purgedata {% for host in CephAllNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
+   - name: ceph deploy purgedata {% for host in CephAllNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
-     register: deploy
-     shell: ceph deploy purgedata {% for host in CephAllNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
+     shell: ceph-deploy purgedata {% for host in CephAllNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
-     when: purge
+     when: purge == true
      
-   - name: Ejecuta ceph deploy forgetkeys
+   - name: ceph deploy forgetkeys
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
-     register: deploy
-     shell: ceph deploy forgetkeys
+     shell: ceph-deploy forgetkeys
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
-     when: purge     
+     when: purge == true
   
     # Start deploying a new cluster and write a configuration file and keyring for it. 
     # It tries to copy ssh keys from admin node to gain passwordless ssh to monitor node(s).
@@ -117,12 +114,12 @@
    - debug: msg="ceph deploy install --release {{ ceph_stable_release }} {% for host in CephAllNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}"  
                                                     
           
-   - name: Ejecuta ceph deploy install --release {{ ceph_stable_release }} {% for host in CephAllNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
+   - name: ceph-deploy install --release {{ ceph_stable_release }} {% for host in CephAllNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
      register: deploy
-     shell: ceph deploy install --release {{ ceph_stable_release }} {% for host in CephAllNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
+     shell: ceph-deploy install --release {{ ceph_stable_release }} {% for host in CephAllNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
      when: not dev
@@ -139,3 +136,5 @@
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
      when: not dev
+
+

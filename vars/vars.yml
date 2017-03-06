@@ -1,14 +1,15 @@
 cephuser: "cephadmin"
 cephgroup: "cephadmin"
 password: $1$SomeSalt$VwjbgiHWuE0VhPB8KxO28.
-dev: true
+dev: false
+purge: false
 cluster_name: ceph
 
 public_network: "192.168.100.0/24"
 public_network_name: "public_network"
 
 ceph_stable_release: "jewel"
-purge: true
+
 
 cluster:
    - node: ceph1

@@ -12,17 +12,17 @@
       
    - name: updates a server
      apt: update_cache=yes
-     when: not dev
+     when: dev
    
    - name: upgrade a server
      apt: upgrade=dist
-     when: not dev
+     when: dev
    
    - name: instala paquetes
      apt: name="{{ item }}" state=present
      with_items:
       - ntp     
-     when: not dev
+     when: dev
       
    - name: Allow vagrant to have passwordless sudo
      lineinfile:
