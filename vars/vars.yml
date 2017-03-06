@@ -1,7 +1,7 @@
 cephuser: "cephadmin"
 cephgroup: "cephadmin"
 password: $1$SomeSalt$VwjbgiHWuE0VhPB8KxO28.
-dev: true
+dev: false
 purge: false
 cluster_name: ceph
 
@@ -21,11 +21,11 @@ cluster:
         - name: osd0
           dev: vdb
           mount: /usr/local/osd0
-          size: 5
+          size: 7
         - name: osd1
           dev: vdc
           mount: /usr/local/osd1
-          size: 6
+          size: 8
     
    - node: ceph2
      monnode: true

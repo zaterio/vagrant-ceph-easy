@@ -21,6 +21,10 @@
       monnode: true
       network:
         - public_network_ip: "192.168.100.102"
+      osdnode:
+        - name: osd0
+        - name: osd1
+
 
        
   tasks:
@@ -56,4 +60,4 @@
     # find admin2
     - debug: msg="el admin2 es {{cluster| selectattr('admin', 'defined')| map(attribute='node')| join(',')}}"
 
-    - debug: msg="ceph-deploy osd prepare {% for c in cluster %}{% if c.osdnode  is defined %}{% for dev in c.osdnode  %}{{ c.node }}:{{dev.dev}} {% endfor %}{% endif %}{% endfor %}"
+    - debug: msg="ceph-deploy osd prepare {% for c in cluster %} {% if c.osdnode is defined %}{% for osd in c.osdnode %}{% if osd.dev is defined %}{{ c.node }}:{{osd.dev}}{% if not loop.last %} {% endif %}{% endif %}{% endfor %}{% endif %}{% endfor %}"

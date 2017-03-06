@@ -2,13 +2,13 @@
 # vi: set ft=ruby :
 
 require 'yaml'
-require 'ipaddress'
+#require 'ipaddress'
 settings = YAML.load_file('vars/vars.yml')
 cluster = settings["cluster"]
 
 
-ip = IPAddress(settings["public_network"])
-public_network_netmask = ip.netmask
+#ip = IPAddress(settings["public_network"])
+public_network_netmask = "255.255.255.0"
 
 CephAllNode = []
 CephOsdNode = []
@@ -48,7 +48,7 @@ end
 
 Vagrant.configure("2") do |config|
 
-	config.vm.box = "xenial2802201701"
+	config.vm.box = "xenial0103201702"
 	config.vm.synced_folder ".", "/vagrant", type: "nfs", disabled: "true"
 	config.hostmanager.enabled = false
 	config.hostmanager.manage_host = false
@@ -79,7 +79,10 @@ Vagrant.configure("2") do |config|
 			 v.keymap = "es"
 			 v.volume_cache = "none"
 			 array['osdnode'].each do |disk|
-			  v.storage :file, :size => disk['size'], 
+			  if disk['size'] < 10
+			    disk['size'] = 10
+			  end
+			  v.storage :file, :size => "#{disk['size']}G", 
 						:dev => disk['dev'], 
 						:cache => 'none', 
 						:bus => 'virtio',
