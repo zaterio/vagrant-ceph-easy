@@ -75,12 +75,12 @@
     # If the public subnet is given, new command will choose the one IP from the remote host that exists within the subnet range. 
     # Public network can also be added at runtime using --public-network option with the command as mentioned above.
    
-   - name: ceph-deploy --cluster {{ cluster_name }} new --public-network {{ public_network }} {% for host in CephMonNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
+   - name: ceph-deploy --cluster {{ cluster_name }} new --public-network {{ public_network }} {% if cluster_network is defined %} --cluster-network {{ cluster_network }}{% endif %} {% for host in CephMonNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
      register: deploy
-     shell: ceph-deploy --cluster {{ cluster_name }} new --public-network {{ public_network }} {% for host in CephMonNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
+     shell: ceph-deploy --cluster {{ cluster_name }} new --public-network {{ public_network }} {% if cluster_network is defined %} --cluster-network {{ cluster_network }}{% endif %} {% for host in CephMonNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
      when: not dev

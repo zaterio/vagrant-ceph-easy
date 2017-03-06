@@ -9,6 +9,7 @@ cluster = settings["cluster"]
 
 #ip = IPAddress(settings["public_network"])
 public_network_netmask = "255.255.255.0"
+cluster_network_netmask = "255.255.255.0"
 
 CephAllNode = []
 CephOsdNode = []
@@ -47,6 +48,25 @@ if CephNonAdmNode.empty?
  abort
 end 
 
+
+if not defined? settings['public_network']
+ public_network = "192.168.100.0/24"
+end
+
+if not defined? settings['public_network_name']
+ public_network_name = "public_network"
+end
+
+
+if not defined? cluster_network 
+ cluster_network = "192.168.100.0/24"
+end
+
+if not defined? cluster_network_name
+ public_network_name = "cluster_network"
+end
+
+
 Vagrant.configure("2") do |config|
 
 	config.vm.box = "xenial0103201702"
@@ -60,17 +80,7 @@ Vagrant.configure("2") do |config|
     cluster.each do |array|
 		config.vm.define array['node'] do |node|   		    
 			node.vm.hostname =  array['node']     
-			array['network'].each do |net|
-			    node.vm.network :private_network, 
-								:ip => net['public_network_ip'],
-								:libvirt__dhcp_enabled => "false",
-								:libvirt__guest_ipv6 => "no",
-								:libvirt__forward_mode => "none",
-								:libvirt__network_name => settings["public_network_name"],
-								:libvirt__netmask => public_network_netmask
-		    end    
-		        
-		        
+			
 		    node.vm.provider :libvirt do |v|
 				v.cpus = 1
 				v.memory = 512
@@ -81,15 +91,39 @@ Vagrant.configure("2") do |config|
 					if disk['size'] < 10
 						disk['size'] = 10
 					end
-					v.storage	:file, :size => "#{disk['size']}G", 
-								:dev => disk['dev'], 
-								:cache => 'none', 
-								:bus => 'virtio',
-								:type => 'qcow2'
-					end
+					v.storage	:file, :size => "#{disk['size']}G", :dev => disk['dev'], :cache => 'none', :bus => 'virtio', :type => 'qcow2'
+				end
 		    end
 		    
-		    node.vm.provision :hostmanager
+		    if defined? array['network']['public_network_ip'] and defined? settings["public_network_name"]
+			 node.vm.network :private_network, 
+								:ip => array['network']['public_network_ip'],
+								:libvirt__dhcp_enabled => "false",
+								:libvirt__guest_ipv6 => "no",
+								:libvirt__forward_mode => "none",
+								:libvirt__network_name => settings["public_network_name"],
+								:libvirt__netmask => public_network_netmask
+			else
+			 node.vm.network :private_network, 
+								:libvirt__dhcp_enabled => "true",
+								:libvirt__guest_ipv6 => "no",
+								:libvirt__forward_mode => "none",
+								:libvirt__network_name => public_network_name
+		    end
+			
+
+			 
+			 if defined? array['network']['cluster_network_ip'] and defined? settings["cluster_network_name"]
+			  node.vm.network :private_network, 
+								:ip => array['network']['cluster_network_ip'],
+								:libvirt__dhcp_enabled => "false",
+								:libvirt__guest_ipv6 => "no",
+								:libvirt__forward_mode => "none",
+								:libvirt__network_name => settings["cluster_network_name"],
+								:libvirt__netmask => cluster_network_netmask
+			end
+			 
+    		node.vm.provision :hostmanager	    
 		  		    
 			node.vm.provision "ansible" do |an|
 			 an.playbook = "ansible/playbooks/setenv.yml"

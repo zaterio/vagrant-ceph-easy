@@ -1,18 +1,22 @@
 cephuser: "cephadmin"
 cephgroup: "cephadmin"
 password: $1$SomeSalt$VwjbgiHWuE0VhPB8KxO28.
+
 dev: false
 purge: false
+
+ceph_stable_release: "jewel"
+
 cluster_name: ceph
 
 osd_pool_default_size: 2
 osd_pool_default_min_size: 1
 
-
 public_network: "192.168.100.0/24"
 public_network_name: "public_network"
 
-ceph_stable_release: "jewel"
+cluster_network: "192.168.101.0/24"
+cluster_network_name: "cluster_network"
 
 
 cluster:
@@ -20,7 +24,8 @@ cluster:
      admnode: true
      monnode: true
      network:
-        - public_network_ip: "192.168.100.101"
+        public_network_ip: "192.168.100.101"
+        cluster_network_ip: "192.168.101.101"
      osdnode:
         - name: osd0
           dev: vdb
@@ -32,7 +37,8 @@ cluster:
    - node: ceph2
      monnode: true
      network:
-        - public_network_ip: "192.168.100.102"
+        public_network_ip: "192.168.100.102"
+        cluster_network_ip: "192.168.101.102"
      osdnode:
        - name: osd2
          dev: vdb
