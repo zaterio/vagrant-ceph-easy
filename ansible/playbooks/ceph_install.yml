@@ -168,4 +168,12 @@
      shell: ceph-deploy osd activate {% for c in cluster %} {% if c.osdnode is defined %}{% for osd in c.osdnode %}{% if osd.dev is defined %}{{ c.node }}:/dev/{{osd.dev}}1{% if not loop.last %} {% endif %}{% endif %}{% endfor %}{% endif %}{% endfor %}
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
-
+     when: not dev
+     
+   - name: ceph-deploy admin {{ CephAdmNode }} {% for host in CephNonAdmNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     shell: ceph-deploy admin {{ CephAdmNode }} {% for host in CephNonAdmNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
+     args:
+      chdir: /home/{{cephuser}}/{{ cluster_name }}
