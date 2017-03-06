@@ -85,53 +85,9 @@
       chdir: /home/{{cephuser}}/{{ cluster_name }}
      when: not dev
 
-   # Write an object 2 times.
-   - name: osd pool default size = 2
-     when: not dev
-     become: yes
-     become_method: "sudo"
-     become_user: "{{ cephuser }}"
-     lineinfile:
-      dest: /home/{{cephuser}}/{{ cluster_name }}/ceph.conf
-      state: present
-      regexp: '^osd pool default size'
-      line: 'osd pool default size = {{ osd_pool_default_size }}'
-
-   # Allow writing one copy in a degraded state.
-   - name: osd pool default min size = 1
-     when: not dev
-     become: yes
-     become_method: "sudo"
-     become_user: "{{ cephuser }}"
-     lineinfile:
-      dest: /home/{{cephuser}}/{{ cluster_name }}/ceph.conf
-      state: present
-      regexp: '^osd pool default min size'
-      line: 'osd pool default min size = {{ osd_pool_default_min_size }}'
-
-
-   - name: osd pool default pg num
-     when: not dev
-     become: yes
-     become_method: "sudo"
-     become_user: "{{ cephuser }}"
-     lineinfile:
-      dest: /home/{{cephuser}}/{{ cluster_name }}/ceph.conf
-      state: present
-      regexp: '^osd pool default pg num'
-      line: 'osd pool default pg num = {{CephOsdCount*100//osd_pool_default_size|int}}'
-
-   - name: osd pool default pgp num
-     when: not dev
-     become: yes
-     become_method: "sudo"
-     become_user: "{{ cephuser }}"
-     lineinfile:
-      dest: /home/{{cephuser}}/{{ cluster_name }}/ceph.conf
-      state: present
-      regexp: '^osd pool default pgp num'
-      line: 'osd pool default pgp num = {{CephOsdCount*100//osd_pool_default_size|int}}'
-    
+   # ceph.conf tunning
+   - include: ceph.conf.yml
+   
             
     # Add this poiny whe have:
     #
