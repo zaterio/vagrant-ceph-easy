@@ -33,7 +33,27 @@
      become_user: "{{ cephuser }}" 
      file:
       path: /home/{{cephuser}}/{{ cluster_name }}
-      state: directory      
+      state: directory
+      
+   - name: Ejecuta ceph deploy purgedata {% for host in CephAllNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     register: deploy
+     shell: ceph deploy purgedata {% for host in CephAllNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
+     args:
+      chdir: /home/{{cephuser}}/{{ cluster_name }}
+     when: purge
+     
+   - name: Ejecuta ceph deploy forgetkeys
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     register: deploy
+     shell: ceph deploy forgetkeys
+     args:
+      chdir: /home/{{cephuser}}/{{ cluster_name }}
+     when: purge     
   
     # Start deploying a new cluster and write a configuration file and keyring for it. 
     # It tries to copy ssh keys from admin node to gain passwordless ssh to monitor node(s).

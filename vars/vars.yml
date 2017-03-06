@@ -8,6 +8,7 @@ public_network: "192.168.100.0/24"
 public_network_name: "public_network"
 
 ceph_stable_release: "jewel"
+purge: true
 
 cluster:
    - node: ceph1
