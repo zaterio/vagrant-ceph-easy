@@ -4,18 +4,17 @@ password: $1$SomeSalt$VwjbgiHWuE0VhPB8KxO28.
 dev: true
 cluster_name: ceph
 
-public_network: "192.168.100.0"
-public_network_netmask: "255.255.255.0"
-public_network_name: "ceph_public_network"
+public_network: "192.168.100.0/24"
+public_network_name: "public_network"
 
 ceph_stable_release: "jewel"
 
 cluster:
    - node: ceph1
      admnode: true
-     monnode: yes
+     monnode: true
      network:
-        - ipcluster: "192.168.101.101"
+        - public_network_ip: "192.168.100.101"
      osdnode:
         - name: osd0
           dev: vdb
@@ -24,39 +23,19 @@ cluster:
         - name: osd1
           dev: vdc
           mount: /usr/local/osd1
-          size: 30
+          size: 6
     
    - node: ceph2
-     admnode: true
+     monnode: true
      network:
-        - ipcluster: "192.168.101.102"
+        - public_network_ip: "192.168.100.102"
      osdnode:
        - name: osd2
          dev: vdb
-         size: 5
+         size: 7
          mount: /usr/local/osd2
        - name: osd3
          dev: vdc
-         size: 10
+         size: 8
          mount: /usr/local/osd3
-       - name: osd4
-         dev: vdd
-         mount: /usr/local/osd4
-         size: 20
-    
-   - node: ceph3 
-     network: 
-        - ipcluster: "192.168.101.103"
-     osdnode:
-       - name: osd5
-         dev: vdb
-         size: 10
-         mount: /usr/local/osd5
-       - name: osd6
-         dev: vdc
-         size: 10
-         mount: /usr/local/osd6
-       - name: osd7
-         dev: vdd
-         mount: /usr/local/osd7
-         size: 10
+

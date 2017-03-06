@@ -2,8 +2,13 @@
 # vi: set ft=ruby :
 
 require 'yaml'
+require 'ipaddress'
 settings = YAML.load_file('vars/vars.yml')
 cluster = settings["cluster"]
+
+
+ip = IPAddress(settings["public_network"])
+public_network_netmask = ip.netmask
 
 CephAllNode = []
 CephOsdNode = []
@@ -58,12 +63,12 @@ Vagrant.configure("2") do |config|
 
 			array['network'].each do |net|
 			    node.vm.network :private_network, 
-			        :ip => net['ipcluster'],
+			        :ip => net['public_network_ip'],
 			        :libvirt__dhcp_enabled => "false",
 			        :libvirt__guest_ipv6 => "no",
 			        :libvirt__forward_mode => "none",
 			        :libvirt__network_name => settings["public_network_name"],
-			        :libvirt__netmask => settings["public_network_netmask"]
+			        :libvirt__netmask => public_network_netmask
 		    end    
 		        
 		        

@@ -14,25 +14,27 @@
      apt_key:
       url: "https://download.ceph.com/keys/release.asc"
       state: present
+     when: not dev
      
    - name: add ceph repo 
      apt_repository:
       repo: deb https://download.ceph.com/debian-{{ceph_stable_release}} xenial main 
       state: present
       filename: 'ceph'
-      
+     when: not dev  
+     
    - name: Update repositories cache and install "ceph-deploy" package
      apt:
       name: ceph-deploy
       update_cache: yes 
+     when: not dev
           
    - name: Crea directorios
      become_user: "{{ cephuser }}" 
      file:
       path: /home/{{cephuser}}/{{ cluster_name }}
       state: directory      
-
-   
+  
     # Start deploying a new cluster and write a configuration file and keyring for it. 
     # It tries to copy ssh keys from admin node to gain passwordless ssh to monitor node(s).
     # validates host IP, creates a cluster with a new initial monitor node or nodes for monitor quorum
@@ -44,12 +46,12 @@
     # If the public subnet is given, new command will choose the one IP from the remote host that exists within the subnet range. 
     # Public network can also be added at runtime using --public-network option with the command as mentioned above.
    
-   - name: ceph-deploy --cluster {{ cluster_name }} new {% for host in CephMonNode %}{{ host }}{%- if not loop.last -%} {% endif %}{% endfor %}
+   - name: ceph-deploy --cluster {{ cluster_name }} new --public-network {{ public_network }} {% for host in CephMonNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
      register: deploy
-     shell: ceph-deploy --cluster {{ cluster_name }} new {% for host in CephMonNode %}{{ host }}{%- if not loop.last -%} {% endif %}{% endfor %}
+     shell: ceph-deploy --cluster {{ cluster_name }} new --public-network {{ public_network }} {% for host in CephMonNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
 
@@ -64,15 +66,18 @@
       regexp: '^osd pool default size'
       line: 'osd pool default size = 2'
 
-   - name: Agrega public network
-     become: yes
-     become_method: "sudo"
-     become_user: "{{ cephuser }}"
-     lineinfile:
-      dest: /home/{{cephuser}}/{{ cluster_name }}/ceph.conf
-      state: present
-      regexp: '^public network'
-      line: 'public network = {{ public_network }}/{{ public_network_netmask }}'
+    
+    # Add this poiny whe have:
+    #
+    # [global]
+    # fsid = 9ea45fc6-4b06-424a-a261-f29faaf5a3c8
+    # mon_initial_members = ceph1, ceph2
+    # mon_host = 192.168.100.101,192.168.100.102
+    # auth_cluster_required = cephx
+    # auth_service_required = cephx
+    # auth_client_required = cephx
+    # osd pool default size = 2
+    # public network = 192.168.100.0/255.255.255.0
 
 
     # Install Ceph packages on remote hosts. As a first step it installs yum-plugin-priorities in admin and other nodes using passwordless ssh and sudo
@@ -89,15 +94,23 @@
     # cd_conf is the object built from argparse that holds the flags and information needed to determine what metadata from the configuration is to 
     # be used. A user can also opt to install only the repository without installing Ceph and its dependencies by using --repo option.   
    
-   - name: Ejecuta ceph deploy install --release {{ ceph_stable_release }} {% for host in CephAllNode %}{{ host }}{%- if not loop.last -%} {% endif %}{% endfor %}}
+   - debug: msg="ceph deploy install --release {{ ceph_stable_release }} {% for host in CephAllNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}"  
+                                                    
+          
+   - name: Ejecuta ceph deploy install --release {{ ceph_stable_release }} {% for host in CephAllNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
      register: deploy
-     shell: ceph deploy install {% for host in CephAllNode %}{{ host }}{%- if not loop.last -%} {% endif %}{% endfor %}}
+     shell: ceph deploy install --release {{ ceph_stable_release }} {% for host in CephAllNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
-     
+     when: not dev
+    
+    # Subcommand create-initial deploys for monitors defined in mon initial members under [global] section in Ceph configuration file, 
+    # wait until they form quorum and then gatherkeys, reporting the monitor status along the process. If monitors don’t form quorum the 
+    # command will eventually time out. 
+    
    - name: Ejecuta ceph mon create-initial
      become: yes
      become_method: "sudo"
@@ -105,6 +118,4 @@
      shell: ceph-deploy mon create-initial
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
-
-	#ceph-deploy osd prepare {node-name}:{data-disk}[:{journal-disk}]
-
+     when: not dev

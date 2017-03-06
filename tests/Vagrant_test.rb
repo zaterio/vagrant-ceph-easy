@@ -2,12 +2,19 @@
 # vi: set ft=ruby :
 
 require 'yaml'
+require 'ipaddress'
+
 settings = YAML.load_file('../vars/vars.yml')
 cluster = settings["cluster"]
 
 CephAllNode = []
 CephOsdNode = []
 CephMonNode = []
+
+ip = IPAddress(settings["public_network"])
+p ip.netmask
+#ip_public = IPAddress::IPv4.new #{public_network}
+
 
 cluster.each do |array|
  
