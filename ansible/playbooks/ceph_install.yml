@@ -87,6 +87,7 @@
 
    # Write an object 2 times.
    - name: osd pool default size = 2
+     when: not dev
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
@@ -95,10 +96,10 @@
       state: present
       regexp: '^osd pool default size'
       line: 'osd pool default size = {{ osd_pool_default_size }}'
-     when: not dev
 
    # Allow writing one copy in a degraded state.
    - name: osd pool default min size = 1
+     when: not dev
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
@@ -107,10 +108,31 @@
       state: present
       regexp: '^osd pool default min size'
       line: 'osd pool default min size = {{ osd_pool_default_min_size }}'
+
+
+   - name: osd pool default pg num
      when: not dev
-     
-     
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     lineinfile:
+      dest: /home/{{cephuser}}/{{ cluster_name }}/ceph.conf
+      state: present
+      regexp: '^osd pool default pg num'
+      line: 'osd pool default pg num = {{CephOsdCount*100//osd_pool_default_size|int}}'
+
+   - name: osd pool default pgp num
+     when: not dev
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     lineinfile:
+      dest: /home/{{cephuser}}/{{ cluster_name }}/ceph.conf
+      state: present
+      regexp: '^osd pool default pgp num'
+      line: 'osd pool default pgp num = {{CephOsdCount*100//osd_pool_default_size|int}}'
     
+            
     # Add this poiny whe have:
     #
     # [global]
@@ -142,6 +164,7 @@
                                                     
           
    - name: ceph-deploy install --release {{ ceph_stable_release }} {% for host in CephAllNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
+     when: not dev
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
@@ -149,46 +172,48 @@
      shell: ceph-deploy install --release {{ ceph_stable_release }} {% for host in CephAllNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
-     when: not dev
+
     
     # Subcommand create-initial deploys for monitors defined in mon initial members under [global] section in Ceph configuration file, 
     # wait until they form quorum and then gatherkeys, reporting the monitor status along the process. If monitors don’t form quorum the 
     # command will eventually time out. 
     
    - name: Ejecuta ceph mon create-initial
+     when: not dev
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
      shell: ceph-deploy mon create-initial
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
-     when: not dev
+
 
    - name: ceph-deploy osd prepare {% for c in cluster %} {% if c.osdnode is defined %}{% for osd in c.osdnode %}{% if osd.dev is defined %}{{ c.node }}:{{osd.dev}}{% if not loop.last %} {% endif %}{% endif %}{% endfor %}{% endif %}{% endfor %}
+     when: not dev 
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
      shell: ceph-deploy osd prepare {% for c in cluster %} {% if c.osdnode is defined %}{% for osd in c.osdnode %}{% if osd.dev is defined %}{{ c.node }}:{{osd.dev}}{% if not loop.last %} {% endif %}{% endif %}{% endfor %}{% endif %}{% endfor %}
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
-     when: not dev   
+  
 
 
    - name: ceph-deploy osd activate {% for c in cluster %} {% if c.osdnode is defined %}{% for osd in c.osdnode %}{% if osd.dev is defined %}{{ c.node }}:/dev/{{osd.dev}}1{% if not loop.last %} {% endif %}{% endif %}{% endfor %}{% endif %}{% endfor %}
+     when: not dev 
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
      shell: ceph-deploy osd activate {% for c in cluster %} {% if c.osdnode is defined %}{% for osd in c.osdnode %}{% if osd.dev is defined %}{{ c.node }}:/dev/{{osd.dev}}1{% if not loop.last %} {% endif %}{% endif %}{% endfor %}{% endif %}{% endfor %}
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
-     when: not dev
 
      
    - name: ceph-deploy admin {{ CephAdmNode }} {% for host in CephNonAdmNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
+     when: not dev 
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
      shell: ceph-deploy admin {{ CephAdmNode }} {% for host in CephNonAdmNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
-     when: not dev

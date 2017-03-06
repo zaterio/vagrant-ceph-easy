@@ -1,12 +1,12 @@
 cephuser: "cephadmin"
 cephgroup: "cephadmin"
 password: $1$SomeSalt$VwjbgiHWuE0VhPB8KxO28.
-dev: true
+dev: false
 purge: false
 cluster_name: ceph
 
 osd_pool_default_size: 2
-osd_pool_default_min_size :1
+osd_pool_default_min_size: 1
 
 
 public_network: "192.168.100.0/24"

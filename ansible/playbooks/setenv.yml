@@ -11,18 +11,18 @@
    - debug: msg="Running setenv playbook"  
       
    - name: updates a server
+     when: not dev 
      apt: update_cache=yes
-     when: not dev
    
    - name: upgrade a server
+     when: not dev 
      apt: upgrade=dist
-     when: not dev
    
    - name: instala paquetes
+     when: not dev 
      apt: name="{{ item }}" state=present
      with_items:
       - ntp     
-     when: not dev
       
    - name: Allow vagrant to have passwordless sudo
      when: not dev
@@ -43,14 +43,16 @@
 
       
    - name: crea grupo {{ cephgroup }}
-     group: name={{ cephgroup }} state=present
      when: not dev
+     group: name={{ cephgroup }} state=present
+
   
    - name: crea usuario {{ cephuser }}
-     user: name={{ cephuser }} group={{ cephgroup }} groups=adm shell=/bin/bash state=present password={{password}}
      when: not dev
+     user: name={{ cephuser }} group={{ cephgroup }} groups=adm shell=/bin/bash state=present password={{password}}
 
    - name: crea dir .ssh
+     when: not dev
      file:
       path: /home/{{ cephuser }}/.ssh
       owner: "{{ cephuser }}"
@@ -91,41 +93,3 @@
       user: "{{ cephuser }}"
       state: present
       key: "{{ lookup('file', '../templates/ssh/id_rsa.pub') }}" 
-
-   #- name: Crea directorios OSD
-     #file:
-      #path: "{{ item.1.mount }}"
-      #state: directory
-      #owner: "{{ cephuser }}"
-      #group: "{{ cephgroup }}"
-     #with_subelements: 
-       #- "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
-       #- osdnode
-       
-   #- name: Fomatea discos XFS
-     #filesystem: 
-      #fstype: xfs
-      #dev: "{{ item.1.disk }}"
-     #with_subelements: 
-       #- "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
-       #-  osdnode
-         
-   #- name: Monta OSD
-     #mount: 
-      #name: "{{item.1.mount}}"
-      #src: "{{ item.1.disk }}"
-      #fstype: xfs
-      #state: mounted
-     #with_subelements: 
-       #- "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
-       #-  osdnode
-
-   #- name: Corrige permisos directorios OSD
-     #file: 
-      #path: "{{item.1.mount}}"
-      #state: directory
-      #owner: "{{ cephuser }}"
-      #group: "{{ cephgroup }}"
-     #with_subelements: 
-       #- "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
-       #-  osdnode

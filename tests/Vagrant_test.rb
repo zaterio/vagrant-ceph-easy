@@ -10,6 +10,7 @@ cluster = settings["cluster"]
 CephAllNode = []
 CephOsdNode = []
 CephMonNode = []
+CephOsdCount = 0
 
 ip = IPAddress(settings["public_network"])
 p ip.netmask
@@ -30,9 +31,17 @@ cluster.each do |array|
  
  if array.include? 'osdnode'
   CephOsdNode << array['node']
+ 
+  for osd in array['osdnode']
+   if osd.include? 'dev'
+     CephOsdCount += 1
+   end
+  end
+  end
+  
  end
- 	        
-end 
+
+p "osds = #{CephOsdCount}"
 
 # exit is admin node osd nodes or no node defined
 if not defined? CephAdmNode or CephOsdNode.empty? or CephAllNode.empty?

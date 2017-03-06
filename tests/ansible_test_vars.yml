@@ -1,6 +1,9 @@
 ---
 - hosts: all 
-  vars:   
+  vars:
+   
+   CephOsdCount: 4
+   osd_pool_default_size: 2
    cluster:
     - node: ceph1
       admnode: true
@@ -61,3 +64,7 @@
     - debug: msg="el admin2 es {{cluster| selectattr('admin', 'defined')| map(attribute='node')| join(',')}}"
 
     - debug: msg="ceph-deploy osd prepare {% for c in cluster %} {% if c.osdnode is defined %}{% for osd in c.osdnode %}{% if osd.dev is defined %}{{ c.node }}:{{osd.dev}}{% if not loop.last %} {% endif %}{% endif %}{% endfor %}{% endif %}{% endfor %}"
+
+    - debug: msg="math {{CephOsdCount*100//osd_pool_default_size|int}}"
+
+    - debug: msg="math {{ 42.55|round|int }}"
