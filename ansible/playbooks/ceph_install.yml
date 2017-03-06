@@ -85,8 +85,8 @@
       chdir: /home/{{cephuser}}/{{ cluster_name }}
      when: not dev
 
-
-   - name: Cambia OSD poll size a 2
+   # Write an object 2 times.
+   - name: osd pool default size = 2
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
@@ -97,6 +97,19 @@
       line: 'osd pool default size = 2'
      when: not dev
 
+   # Allow writing one copy in a degraded state.
+   - name: osd pool default min size = 1
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     lineinfile:
+      dest: /home/{{cephuser}}/{{ cluster_name }}/ceph.conf
+      state: present
+      regexp: '^osd pool default min size'
+      line: 'osd pool default min size = 1'
+     when: not dev
+     
+     
     
     # Add this poiny whe have:
     #
@@ -169,6 +182,7 @@
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
      when: not dev
+
      
    - name: ceph-deploy admin {{ CephAdmNode }} {% for host in CephNonAdmNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
      become: yes
@@ -177,3 +191,4 @@
      shell: ceph-deploy admin {{ CephAdmNode }} {% for host in CephNonAdmNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
+     when: not dev
