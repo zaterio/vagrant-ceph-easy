@@ -161,12 +161,11 @@
      when: not dev   
 
 
-   - name: ceph-deploy osd activate {% for c in cluster %} {% if c.osdnode is defined %}{% for osd in c.osdnode %}{% if osd.dev is defined %}{{ c.node }}:{{osd.dev}}{% if not loop.last %} {% endif %}{% endif %}{% endfor %}{% endif %}{% endfor %}
+   - name: ceph-deploy osd activate {% for c in cluster %} {% if c.osdnode is defined %}{% for osd in c.osdnode %}{% if osd.dev is defined %}{{ c.node }}:/dev/{{osd.dev}}1{% if not loop.last %} {% endif %}{% endif %}{% endfor %}{% endif %}{% endfor %}
      become: yes
      become_method: "sudo"
      become_user: "{{ cephuser }}"
-     shell: ceph-deploy osd activate {% for c in cluster %} {% if c.osdnode is defined %}{% for osd in c.osdnode %}{% if osd.dev is defined %}{{ c.node }}:{{osd.dev}}{% if not loop.last %} {% endif %}{% endif %}{% endfor %}{% endif %}{% endfor %}
+     shell: ceph-deploy osd activate {% for c in cluster %} {% if c.osdnode is defined %}{% for osd in c.osdnode %}{% if osd.dev is defined %}{{ c.node }}:/dev/{{osd.dev}}1{% if not loop.last %} {% endif %}{% endif %}{% endfor %}{% endif %}{% endfor %}
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
-     when: not dev 
 

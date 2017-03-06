@@ -12,37 +12,43 @@
       
    - name: updates a server
      apt: update_cache=yes
-     when: dev
+     when: not dev
    
    - name: upgrade a server
      apt: upgrade=dist
-     when: dev
+     when: not dev
    
    - name: instala paquetes
      apt: name="{{ item }}" state=present
      with_items:
       - ntp     
-     when: dev
+     when: not dev
       
    - name: Allow vagrant to have passwordless sudo
+     when: not dev
      lineinfile:
       dest: /etc/sudoers
       state: present
       regexp: '^vagrant'
       line: 'vagrant ALL=(ALL) NOPASSWD: ALL'
+
       
    - name: Allow {{ cephuser }} to have passwordless sudo
+     when: not dev
      lineinfile:
       dest: /etc/sudoers
       state: present
       regexp: '^{{ cephuser }}'
       line: '{{ cephuser }} ALL=(ALL) NOPASSWD: ALL'
+
       
    - name: crea grupo {{ cephgroup }}
      group: name={{ cephgroup }} state=present
+     when: not dev
   
    - name: crea usuario {{ cephuser }}
      user: name={{ cephuser }} group={{ cephgroup }} groups=adm shell=/bin/bash state=present password={{password}}
+     when: not dev
 
    - name: crea dir .ssh
      file:
@@ -53,6 +59,7 @@
       state: directory
 
    - name: copia id_rsa.pub {{ cephuser }}
+     when: not dev
      copy:
       src: ../templates/ssh/id_rsa.pub
       dest: /home/{{ cephuser }}/.ssh/id_rsa.pub
@@ -61,6 +68,7 @@
       mode: 0600
 
    - name: copia id_rsa {{ cephuser }}
+     when: not dev
      copy:
       src: ../templates/ssh/id_rsa
       dest: /home/{{ cephuser }}/.ssh/id_rsa
@@ -69,6 +77,7 @@
       mode: 0600
 
    - name: copia config ssh
+     when: not dev
      template:
       src: ../templates/ssh/config
       dest: /home/{{ cephuser }}/.ssh/config
@@ -77,6 +86,7 @@
       mode: 0600
 
    - name: Set authorized key took from file
+     when: not dev
      authorized_key:
       user: "{{ cephuser }}"
       state: present
