@@ -94,7 +94,7 @@
       dest: /home/{{cephuser}}/{{ cluster_name }}/ceph.conf
       state: present
       regexp: '^osd pool default size'
-      line: 'osd pool default size = 2'
+      line: 'osd pool default size = {{ osd_pool_default_size }}'
      when: not dev
 
    # Allow writing one copy in a degraded state.
@@ -106,7 +106,7 @@
       dest: /home/{{cephuser}}/{{ cluster_name }}/ceph.conf
       state: present
       regexp: '^osd pool default min size'
-      line: 'osd pool default min size = 1'
+      line: 'osd pool default min size = {{ osd_pool_default_min_size }}'
      when: not dev
      
      

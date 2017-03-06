@@ -5,6 +5,10 @@ dev: true
 purge: false
 cluster_name: ceph
 
+osd_pool_default_size: 2
+osd_pool_default_min_size :1
+
+
 public_network: "192.168.100.0/24"
 public_network_name: "public_network"
 
