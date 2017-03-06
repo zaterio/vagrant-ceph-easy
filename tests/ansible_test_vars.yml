@@ -2,76 +2,58 @@
 - hosts: all 
   vars:   
    cluster:
-   - node: ceph1
-     admin: true
-     network:
-        - ipcluster: "192.168.101.101"
-     osdnode:
+    - node: ceph1
+      admnode: true
+      monnode: true
+      network:
+         - public_network_ip: "192.168.100.101"
+      osdnode:
         - name: osd0
-          disk: "/dev/vdb"
-          mount: "/usr/local/osd0"
+          dev: vdb
+          mount: /usr/local/osd0
+          size: 5
         - name: osd1
-          disk: "/dev/vdc"
-          mount: "/usr/local/osd1" 
+          dev: vdc
+          mount: /usr/local/osd1
+          size: 6
     
-   - node: ceph2
-     network:
-        - ipcluster: "192.168.101.102"
-     osdnode:
-       - name: osd2
-         disk: "/dev/vdb"
-         mount: "/usr/local/osd2"
-       - name: osd3
-         disk: "/dev/vdc"
-         mount: "/usr/local/osd3"
-       - name: osd4
-         disk: "/dev/vdd"
-         mount: "/usr/local/osd4"
-    
-   - node: localhost 
-     network: 
-        - ipcluster: "192.168.101.103"
-     osdnode:
-       - name: osd5
-         disk: "/dev/vdb"
-         mount: "/usr/local/osd5"
-       - name: osd6
-         disk: "/dev/vdc"
-         mount: "/usr/local/osd6"
-       - name: osd7
-         disk: "/dev/vdd"
-         mount: "/usr/local/osd7" 
+    - node: ceph2
+      monnode: true
+      network:
+        - public_network_ip: "192.168.100.102"
+
        
   tasks:
-    # osd prepare
-    - debug: msg="{{item.0.node}} {{item.1.mount}}"
-      with_subelements: 
-       - "{{cluster}}"
-       - osdnode
+    ## osd prepare
+    #- debug: msg="{{item.0.node}} {{item.1.mount}}"
+      #with_subelements: 
+       #- "{{cluster}}"
+       #- osdnode
     
-    # mount   
-    - debug: msg="src = {{item.1.mount}} disk = {{item.1.disk}}"
-      with_subelements: 
-       - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
-       -  osdnode
-    # xfs
-    - debug: msg=" disk = {{item.1.disk}}"
-      with_subelements: 
-       - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
-       -  osdnode
+    ## mount   
+    #- debug: msg="src = {{item.1.mount}} disk = {{item.1.disk}}"
+      #with_subelements: 
+       #- "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
+       #-  osdnode
+    ## xfs
+    #- debug: msg=" disk = {{item.1.disk}}"
+      #with_subelements: 
+       #- "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
+       #-  osdnode
 
-    # crea dirs & fix permisions
-    - debug: msg=" disk = {{item.1.mount}}"
-      with_subelements: 
-       - "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
-       - osdnode
+    ## crea dirs & fix permisions
+    #- debug: msg=" disk = {{item.1.mount}}"
+      #with_subelements: 
+       #- "{{cluster| selectattr('node', 'equalto', inventory_hostname )|list}}"
+       #- osdnode
 
-    # find admin
-    - debug: msg=" el admin1 es {{item.node}}"
-      with_items: 
-       - "{{cluster| selectattr('admin', 'defined' )|list}}"
+    ## find admin
+    #- debug: msg=" el admin1 es {{item.node}}"
+      #with_items: 
+       #- "{{cluster| selectattr('admin', 'defined' )|list}}"
 
 
     # find admin2
     - debug: msg="el admin2 es {{cluster| selectattr('admin', 'defined')| map(attribute='node')| join(',')}}"
 
+    - debug: msg="ceph-deploy osd prepare {% for c in cluster %}{% if c.osdnode  is defined %}{% for dev in c.osdnode  %}{{ c.node }}:{{dev.dev}} {% endfor %}{% endif %}{% endfor %}"

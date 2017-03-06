@@ -1,7 +1,7 @@
 cephuser: "cephadmin"
 cephgroup: "cephadmin"
 password: $1$SomeSalt$VwjbgiHWuE0VhPB8KxO28.
-dev: false
+dev: true
 purge: false
 cluster_name: ceph
 

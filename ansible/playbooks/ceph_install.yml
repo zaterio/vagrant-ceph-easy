@@ -33,6 +33,7 @@
      file:
       path: /home/{{cephuser}}/{{ cluster_name }}
       state: directory
+     when: not dev
       
    - name: ceph deploy purgedata {% for host in CephAllNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
      become: yes
@@ -71,6 +72,7 @@
      shell: ceph-deploy --cluster {{ cluster_name }} new --public-network {{ public_network }} {% for host in CephMonNode %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
      args:
       chdir: /home/{{cephuser}}/{{ cluster_name }}
+     when: not dev
 
 
    - name: Cambia OSD poll size a 2
@@ -82,6 +84,7 @@
       state: present
       regexp: '^osd pool default size'
       line: 'osd pool default size = 2'
+     when: not dev
 
     
     # Add this poiny whe have:
@@ -138,3 +141,5 @@
      when: not dev
 
 
+   - debug: ceph-deploy osd prepare {% for host in CephOsdNode %}{% for disk in cluster[host] %}{{ host }}{% if not loop.last %} {% endif %}{% endfor %}
+     
