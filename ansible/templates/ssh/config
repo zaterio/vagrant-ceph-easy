@@ -2,10 +2,22 @@ Host 192.168.121.*
    User {{cephuser}}
    StrictHostKeyChecking no
    UserKnownHostsFile=/dev/null
+
+{% if public_network is defined %}
 Host 192.168.101.*
    User {{cephuser}}
    StrictHostKeyChecking no
    UserKnownHostsFile=/dev/null
+{% endif %}
+
+{% if cluster_network is defined %}
+Host 192.168.100.*
+   User {{cephuser}}
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
+
+
+
 {% for host in groups.all[0:] -%}
 Host {{ hostvars[host].inventory_hostname }}
 	Hostname {{ hostvars[host].inventory_hostname }}

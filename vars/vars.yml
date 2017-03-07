@@ -5,6 +5,8 @@ password: $1$SomeSalt$VwjbgiHWuE0VhPB8KxO28.
 dev: false
 purge: false
 
+install: auto
+
 ceph_stable_release: "jewel"
 
 cluster_name: ceph
