@@ -1,0 +1,197 @@
+---
+- hosts: all
+  remote_user: root
+
+  vars_files:
+   - ../../vars/vars.yml    
+
+  tasks:
+
+   #- name: add ceph release key
+     #delegate_to: "{{ item }}"
+     #apt_key:
+      #url: "https://download.ceph.com/keys/release.asc"
+      #state: present
+     #when: not dev and install == "manual"
+     #with_items: "{{ CephAllNode }}"
+
+    
+   #- name: add ceph repo
+     #delegate_to: "{{ item }}" 
+     #apt_repository:
+      #repo: deb https://download.ceph.com/debian-{{ceph_stable_release}} xenial main 
+      #state: present
+      #filename: 'ceph'
+     #when: not dev and install == "manual"
+     #with_items: "{{ CephAllNode }}"
+
+     
+   #- name: Update repositories cache and install ceph 
+     #delegate_to: "{{ item }}" 
+     #when: not dev and install == "manual"
+     #apt:
+      #name: ceph
+      #update_cache: yes
+     #with_items: "{{ CephAllNode }}"
+      
+   #- name: install ceph and ceph-mds
+     #delegate_to: "{{ item }}"
+     #when: not dev and install == "manual"
+     #apt:
+      #name: ceph-mds
+      #update_cache: yes
+     #with_items: "{{ CephAllNode }}"      
+  
+       
+   - name: /etc/ceph exists?
+     when: not dev
+     delegate_to: "{{ item }}"
+     file:
+      path: /etc/ceph
+      state: directory
+      owner: "{{ cephuser }}"
+     with_items:
+        -  "{{ CephMonNode }}"
+
+
+
+   - name: template /etc/ceph/ceph.conf
+     when: not dev
+     delegate_to: "{{ item }}"
+     template:
+      src: ../templates/ceph/ceph.conf
+      dest: /etc/ceph/ceph.conf 
+      owner: "{{ cephuser }}"
+     with_items:
+        -  "{{ CephMonNode }}"
+
+   - name: Create a keyring for your cluster and generate a monitor secret key, in /tmp/ceph.mon.keyring
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     shell: ceph-authtool --create-keyring /tmp/ceph.mon.keyring --gen-key -n mon. --cap mon 'allow *'
+     when: not dev
+
+
+
+   - name: Generate an administrator keyring, generate a client.admin user and add the user to the keyring.
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     shell: ceph-authtool --create-keyring /etc/ceph/ceph.client.admin.keyring --gen-key -n client.admin --set-uid=0 --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow'
+     args:
+      chdir: /etc/ceph
+     when: not dev
+
+   - name: Add the client.admin key to the ceph.mon.keyring
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     shell: ceph-authtool /tmp/ceph.mon.keyring --import-keyring /etc/ceph/ceph.client.admin.keyring
+     when: not dev
+
+
+   - name: Copia mon keyring to mon nodes
+     when: not dev
+     delegate_to: "{{ item }}"
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     shell: scp {{ cephuser }}@{{ CephAdmNode }}:/tmp/ceph.mon.keyring /tmp/ceph.mon.keyring
+     with_items:
+       - "{{ CephMonNode }}"
+ 
+            
+   - name: remove /tmp/monmap if exists
+     file:
+      path: /tmp/monmap
+      state: absent
+     when: not dev
+
+   - name:  monmaptool --create  {% for host in cluster %} {% if host.monnode is defined %} {% if host.network.public_network_ip is defined %} --add {{ host.node }} {{ host.network.public_network_ip }} {% if not loop.last %} {% endif %}{% endif %}{% endif %}{% endfor %} --fsid {{ fsid }} /tmp/monmap
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     shell: monmaptool --create  {% for host in cluster %}{% if host.monnode is defined %}{% if host.network.public_network_ip is defined %} --add {{ host.node }} {{ host.network.public_network_ip }} {% if not loop.last %} {% endif %}{% endif %}{% endif %}{% endfor %} --fsid {{ fsid }} /tmp/monmap
+     when: not dev
+
+
+
+   - name:  Copia monmap to nodes
+     when: not dev
+     delegate_to: "{{ item }}"
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     shell: scp {{ cephuser }}@{{ CephAdmNode }}:/tmp/monmap /tmp/monmap
+     with_items:
+        - "{{ CephMonNode }}"
+       
+                  
+   - name: Create a default data directory (or directories) on the monitor host(s).
+     when: not dev
+     delegate_to: "{{ item }}"
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     file:
+      path: /var/lib/ceph/mon/{{ cluster_name }}-{{ item }}
+      state: directory
+     with_items:
+       - "{{ CephMonNode }}"
+
+
+   - name: Populate the monitor daemon(s)  ceph-mon --mkfs -i host --monmap /tmp/monmap --keyring /tmp/ceph.mon.keyring.
+     delegate_to: "{{ item }}"
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     shell: ceph-mon --mkfs -i {{ item }} --monmap /tmp/monmap --keyring /tmp/ceph.mon.keyring
+     args:
+      chdir: /etc/ceph
+     with_items:
+       - "{{ CephMonNode }}"
+     when: not dev
+
+   - name: Touch the done file.
+     delegate_to: "{{ item }}"
+     when: not dev
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     file: 
+      path: /var/lib/ceph/mon/ceph-{{ item }}/done
+      state: touch
+     with_items:
+       - "{{ CephMonNode | difference([inventory_hostname]) }}"
+
+   - name: Start mon node on cephadmin
+     when: not dev
+     delegate_to: "{{ item }}"
+     shell: systemctl start ceph-mon@{{ item }}
+     with_items:
+       - "{{ CephMonNode }}"
+
+
+   ## OSD      
+   - name: sudo ceph-disk prepare --cluster {{ cluster_name }}
+     when: not dev
+     delegate_to: "{{ item.0.node }}"
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     shell: sudo ceph-disk prepare --cluster {{ cluster_name }} --cluster-uuid {{ fsid }} --fs-type xfs /dev/{{ item.1.dev }}
+     with_subelements: 
+       - "{{ cluster }}"
+       -  osdnode
+     
+   - name: sudo ceph-disk activate --cluster {{ cluster_name }}
+     when: not dev
+     delegate_to: "{{ item.0.node }}"
+     become: yes
+     become_method: "sudo"
+     become_user: "{{ cephuser }}"
+     shell: sudo ceph-disk activate /dev/{{ item.1.dev }}
+     with_subelements: 
+       - "{{ cluster }}"
+       -  osdnode

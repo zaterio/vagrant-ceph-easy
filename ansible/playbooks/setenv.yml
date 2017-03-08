@@ -10,19 +10,19 @@
 
    - debug: msg="Running setenv playbook"  
       
-   - name: updates a server
-     when: not dev 
-     apt: update_cache=yes
+   #- name: updates a server
+     #when: not dev 
+     #apt: update_cache=yes
    
-   - name: upgrade a server
-     when: not dev 
-     apt: upgrade=dist
+   #- name: upgrade a server
+     #when: not dev 
+     #apt: upgrade=dist
    
-   - name: instala paquetes
-     when: not dev 
-     apt: name="{{ item }}" state=present
-     with_items:
-      - ntp     
+   #- name: instala paquetes
+     #when: not dev 
+     #apt: name="{{ item }}" state=present
+     #with_items:
+      #- ntp     
       
    - name: Allow vagrant to have passwordless sudo
      when: not dev
@@ -49,12 +49,12 @@
   
    - name: crea usuario {{ cephuser }}
      when: not dev
-     user: name={{ cephuser }} group={{ cephgroup }} groups=adm shell=/bin/bash state=present password={{password}}
+     user: name={{ cephuser }} group={{ cephgroup }} groups=adm shell=/bin/bash state=present password={{password}} createhome=yes home=/var/lib/{{ cephuser }}
 
    - name: crea dir .ssh
      when: not dev
      file:
-      path: /home/{{ cephuser }}/.ssh
+      path: //var/lib/{{ cephuser }}/.ssh
       owner: "{{ cephuser }}"
       group: "{{ cephgroup }}"
       mode: 0700      
@@ -64,7 +64,7 @@
      when: not dev
      copy:
       src: ../templates/ssh/id_rsa.pub
-      dest: /home/{{ cephuser }}/.ssh/id_rsa.pub
+      dest: /var/lib/{{ cephuser }}/.ssh/id_rsa.pub
       owner: "{{ cephuser }}"
       group: "{{ cephgroup }}"
       mode: 0600
@@ -73,7 +73,7 @@
      when: not dev
      copy:
       src: ../templates/ssh/id_rsa
-      dest: /home/{{ cephuser }}/.ssh/id_rsa
+      dest: /var/lib/{{ cephuser }}/.ssh/id_rsa
       owner: "{{ cephuser }}"
       group: "{{ cephgroup }}"
       mode: 0600
@@ -82,7 +82,7 @@
      when: not dev
      template:
       src: ../templates/ssh/config
-      dest: /home/{{ cephuser }}/.ssh/config
+      dest: /var/lib/{{ cephuser }}/.ssh/config
       owner: "{{ cephuser }}"
       group: "{{ cephgroup }}"
       mode: 0600

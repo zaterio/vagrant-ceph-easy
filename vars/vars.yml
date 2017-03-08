@@ -1,13 +1,6 @@
-cephuser: "cephadmin"
-cephgroup: "cephadmin"
+cephuser: "ceph"
+cephgroup: "ceph"
 password: $1$SomeSalt$VwjbgiHWuE0VhPB8KxO28.
-
-dev: false
-purge: false
-
-install: auto
-
-ceph_stable_release: "jewel"
 
 cluster_name: ceph
 
@@ -20,6 +13,14 @@ public_network_name: "public_network"
 cluster_network: "192.168.101.0/24"
 cluster_network_name: "cluster_network"
 
+ceph_stable_release: "jewel"
+
+dev: true
+purge: false
+
+# vars for manual install
+install: "manual"
+fsid: "6313b435-92ab-49bf-ae14-56025e05f9bf"
 
 cluster:
    - node: ceph1
@@ -29,10 +30,10 @@ cluster:
         public_network_ip: "192.168.100.101"
         cluster_network_ip: "192.168.101.101"
      osdnode:
-        - name: osd0
+        - num: 0
           dev: vdb
           size: 7
-        - name: osd1
+        - num: 1
           dev: vdc
           size: 8
     
@@ -42,10 +43,10 @@ cluster:
         public_network_ip: "192.168.100.102"
         cluster_network_ip: "192.168.101.102"
      osdnode:
-       - name: osd2
+       - num: 2
          dev: vdb
          size: 7
-       - name: osd3
+       - num: 3
          dev: vdc
          size: 8
 

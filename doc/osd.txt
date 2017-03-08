@@ -1,0 +1,104 @@
+# group = data
+
+# set the number of placement groups (100) (only increase)
+sudo ceph osd pool set data pg_num 100
+
+# To get the number of placement groups in a pool
+sudo ceph osd pool get data pg_num
+
+
+# cluster stats
+ceph pg dump
+ceph pg dump --format json
+
+# To get the statistics for all placement groups stuck in a specified state, execute the following:
+# ceph pg dump_stuck inactive|unclean|stale|undersized|degraded [--format <format>] [-t|--threshold <seconds>]
+# Inactive Placement groups cannot process reads or writes because they are waiting for an OSD with the most up-to-date data to come up and in.
+# Unclean Placement groups contain objects that are not replicated the desired number of times. They should be recovering.
+# Stale Placement groups are in an unknown state - the OSDs that host them have not reported to the monitor cluster in a while (configured by mon_osd_report_timeout).
+# Valid formats are plain (default) and json. 
+# The threshold defines the minimum number of seconds the placement group is stuck before including it in the returned statistics (default 300 seconds).
+
+sudo ceph pg dump_stuck inactive 
+sudo ceph pg dump_stuck unclean
+sudo ceph pg dump_stuck undersized
+sudo ceph pg dump_stuck degraded
+
+# To get the placement group map for a particular placement group
+ceph pg map v73
+
+# size
+sudo ceph osd  pool get data size
+
+# min_size
+sudo ceph osd  pool get data min_size
+
+# crash_replay_interval
+sudo ceph osd  pool get data crash_replay_interval
+
+# pgp_num
+sudo ceph osd  pool get data pgp_num
+
+# crush_ruleset
+sudo ceph osd  pool get data crush_ruleset
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+

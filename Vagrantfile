@@ -69,7 +69,7 @@ end
 
 Vagrant.configure("2") do |config|
 
-	config.vm.box = "xenial0103201702"
+	config.vm.box = "xenial0803201701"
 	config.vm.synced_folder ".", "/vagrant", type: "nfs", disabled: "true"
 	config.hostmanager.enabled = false
 	config.hostmanager.manage_host = false
@@ -140,7 +140,7 @@ Vagrant.configure("2") do |config|
 			config.vm.define CephAdmNode do |node|   		       		
 				node.vm.provision "ansible" do |an|
 					an.sudo = true
-					if settings['install'] == auto
+					if settings['install'] == "auto"
 					 an.playbook = "ansible/playbooks/ceph_install.yml"
 					else
 					 an.playbook = "ansible/playbooks/ceph_install_manual.yml"
